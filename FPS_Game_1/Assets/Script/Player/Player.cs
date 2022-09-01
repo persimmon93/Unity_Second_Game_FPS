@@ -13,17 +13,35 @@ public class Player : MonoBehaviour
     public static Player Instance { get; private set; }     //Singleton
     #endregion
 
-
-    [SerializeField] internal static Rigidbody rigidBody;
-    [SerializeField] bool isGrounded;    //Checks to see if player is grounded.
-
+    #region Components
+    internal Rigidbody rigidBody;
     [SerializeField] internal static PlayerCommand playerCommand;
+    #endregion
 
-    public float speed;
+    #region Player Data
+    [Range(10f, 100f)]
+    public float mouseSensitivity = 70f;
+
+
+    [SerializeField] bool isGrounded;    //Checks to see if player is grounded.
+    public float distanceToGround = 1f;
+
+    [SerializeField] internal float moveSpeed;
     public Vector3 movementDirection;
+    internal bool jump;
+    [SerializeField] public float jumpHeight;
+
+    #endregion
+
+
+    #region GameObjects
+    internal GameObject player;     //GameObject that contains this script.
+    #endregion
+
 
     private void Awake()
     {
+        #region SettingSingleton
         //Singleton
         if (Instance != null && Instance != this)
         {
@@ -32,13 +50,14 @@ public class Player : MonoBehaviour
         {
             Instance = this;
         }
+        #endregion
     }
 
     void Start()
     {
         #region PlayerData
-        speed = 10f;
-
+        moveSpeed = 10f;
+        jumpHeight = 10f;
 
         #endregion
 
@@ -46,6 +65,7 @@ public class Player : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();          //RigidBody reference.
         rigidBody.freezeRotation = true;                //Prevents collisions from knocking player down.
         playerCommand = GetComponent<PlayerCommand>();  //PlayerCommand reference.
+        player = transform.gameObject;                  //GameObject that contains this script.
         #endregion
 
         #region ExceptionCalls
@@ -53,17 +73,39 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("Player script is missing 'PlayerCommand' component!");
         }
+        if (player == null)
+        {
+            Debug.LogError("GameObject for player is missing!");
+        }
         #endregion
     }
 
     void Update()
     {
         movementDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        if (isGrounded && Input.GetButtonDown("Jump"))
+            jump = true;
+
     }
 
     private void FixedUpdate()
     {
-        playerCommand.MoveCharacter(movementDirection, speed);
+        #region Movement
+        playerCommand.MoveCharacter(movementDirection, moveSpeed);
+        #endregion
+
+        #region Jump
+        if (jump)
+        {
+            playerCommand.Jump(jumpHeight);
+        }
+        #endregion
+
+        #region IsGrounded function
+        //Checks the distance between player and ground and returns true/false
+        isGrounded = (Physics.Raycast(transform.position, Vector3.down, distanceToGround + 0.1f)) ? true : false;
+        #endregion
+
     }
 
     private void OnCollisionEnter(Collision collision)

@@ -12,7 +12,7 @@ public class PlayerCommand : MonoBehaviour
     /// <param name="speed"></param>        Player's speed.
     internal void MoveCharacter(Vector3 direction, float speed)
     {
-        Player.rigidBody.MovePosition(transform.position + (direction * speed * Time.deltaTime));
+        Player.Instance.rigidBody.MovePosition(transform.position + (direction * speed * Time.deltaTime));
     }
 
     /// <summary>
@@ -22,14 +22,18 @@ public class PlayerCommand : MonoBehaviour
     /// <param name="speed"></param>        Player's speed.
     internal void MoveCharacterForce(Vector3 direction, float speed)
     {
-        Player.rigidBody.AddForce(direction * speed);
+        Player.Instance.rigidBody.AddForce(direction * speed);
     }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    internal void Jump(float speed)
-    {
 
+    /// <summary>
+    /// Command for player jumping.
+    /// </summary>
+    /// <param name="jumpHeight"></param>
+    internal void Jump(float jumpHeight)
+    {
+        Player.Instance.rigidBody.velocity += (Vector3.up * jumpHeight);
+        Player.Instance.jump = false;
     }
+
+
 }
