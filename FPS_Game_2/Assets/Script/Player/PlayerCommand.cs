@@ -34,5 +34,13 @@ public class PlayerCommand : MonoBehaviour
         Player.Instance.rigidBody.velocity += (Vector3.up * jumpHeight);
     }
 
+    /// <summary>
+    /// Runs if the player presses mouse scroll wheel. Changes cursor state.
+    /// </summary>
+    /// <returns></returns>
+    internal CursorLockMode ChangeCursor()
+    {
+        return (Player.Instance.cursorState) ? CursorLockMode.None : CursorLockMode.Locked;
+    }
 
 }
