@@ -32,7 +32,6 @@ public class PlayerCommand : MonoBehaviour
     internal void Jump(float jumpHeight)
     {
         Player.Instance.rigidBody.velocity += (Vector3.up * jumpHeight);
-        Player.Instance.jump = false;
     }
 
 

@@ -98,6 +98,7 @@ public class Player : MonoBehaviour
         if (jump)
         {
             playerCommand.Jump(jumpHeight);
+            jump = false;
         }
         #endregion
 

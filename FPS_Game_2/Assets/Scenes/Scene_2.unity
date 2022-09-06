@@ -274,6 +274,7 @@ GameObject:
   - component: {fileID: 655590936}
   - component: {fileID: 655590935}
   - component: {fileID: 655590934}
+  - component: {fileID: 655590937}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -347,6 +348,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &655590937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 655590933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ba0c465c84bc2a4da7212ef451531f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 655590933}
 --- !u!1 &874071622
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,9 +395,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b39904fd013917940b70f70d2bc3255f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mouseSensitivity: 60.7
   isGrounded: 0
-  speed: 0
+  distanceToGround: 1
+  moveSpeed: 0
   movementDirection: {x: 0, y: 0, z: 0}
+  jumpHeight: 0
 --- !u!136 &874071624
 CapsuleCollider:
   m_ObjectHideFlags: 0
