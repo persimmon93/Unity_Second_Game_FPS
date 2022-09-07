@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 [RequireComponent(typeof(Rigidbody))]
@@ -15,13 +16,14 @@ public class Player : MonoBehaviour
 
     #region Components
     internal Rigidbody rigidBody;
-    [SerializeField] internal static PlayerCommand playerCommand;
+    [SerializeField] internal PlayerCommand playerCommand;
     #endregion
 
     #region Player Data
     [SerializeField] bool isGrounded;    //Checks to see if player is grounded. Checks with playermodel collider.
     internal float distanceToGround;
 
+    [Range(5f, 20f)]
     [SerializeField] internal float moveSpeed;
 
     public Vector3 movementDirection;
@@ -29,6 +31,10 @@ public class Player : MonoBehaviour
     public float jumpHeight;
 
     internal bool cursorState;  //0 = Locked 1 = NotLocked
+    #endregion
+
+    #region UI
+    internal Image crossHair;   //Set Manually.
     #endregion
 
     #region GameObjects
@@ -61,34 +67,10 @@ public class Player : MonoBehaviour
         distanceToGround = 0.5f;
         #endregion
 
-        #region Reference
-        rigidBody = GetComponent<Rigidbody>();          //RigidBody reference.
-        rigidBody.freezeRotation = true;                //Prevents collisions from knocking player down.
-        playerCommand = GetComponent<PlayerCommand>();  //PlayerCommand reference.
-        player = GameObject.FindGameObjectWithTag("Player");
-        playerModel = GameObject.FindGameObjectWithTag("PlayerModel");  //GameObject that contains this script.
-        head = GameObject.FindGameObjectWithTag("Head");    //GameObject for the head.
-
-        #endregion
-
-        #region ExceptionCalls
-        if (playerCommand == null)
+        if (crossHair == null)
         {
-            Debug.LogError("Player script is missing 'PlayerCommand' component!");
+            Debug.Log("There is no crosshair for player.");
         }
-        if (player == null)
-        {
-            Debug.LogError("Reference for Player is missing! Set a tag 'Player' for a game object.");
-        }
-        if (playerModel == null)
-        {
-            Debug.LogError("Reference for PlayerModel is missing! Set a tag 'PlayerModel' for a game object.");
-        }
-        if (head == null)
-        {
-            Debug.LogError("Reference for Head is missing! Set a tag 'Head' for a game object.");
-        }
-        #endregion
 
         LinkPlayerToPlayerModel();
     }
@@ -109,7 +91,6 @@ public class Player : MonoBehaviour
         {
             jump = true;
         }
-        //moveSpeed = (jump) ? (moveSpeed / 2) : (moveSpeed * 2); When player jumps, should reduce movement position.
     }
 
     private void FixedUpdate()
@@ -133,27 +114,9 @@ public class Player : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        
-    }
-
-    private void OnCollisionStay(Collision collision)
-    {
-        if ((int)collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            isGrounded = true;
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if ((int)collision.gameObject.layer != LayerMask.NameToLayer("Ground"))
-        {
-            isGrounded = false;
-        }
-    }
-
+    /// <summary>
+    /// This will attach player model to the player object via script without manually attaching model to player.
+    /// </summary>
     private void LinkPlayerToPlayerModel()
     {
         if (playerModel.transform.parent == null)

@@ -6,6 +6,10 @@ TagManager:
   tags:
   - PlayerModel
   - Head
+  - Pistol
+  - Rifle
+  - Sniper
+  - Knife
   layers:
   - Default
   - TransparentFX

@@ -4,6 +4,25 @@ using UnityEngine;
 
 public class Camera : MonoBehaviour
 {
+    #region Singleton
+    public static Camera Instance { get; private set; }     //Singleton
+    #endregion
+
+    private void Awake()
+    {
+        #region SettingSingleton
+        //Singleton
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+        #endregion
+    }
+
     public Transform target;
 
     [Range(100f, 300f)]
@@ -18,23 +37,7 @@ public class Camera : MonoBehaviour
     {
         mouseSensitivity = 200f;
 
-        //Sets reference to player.
-        target = Player.Instance.player.transform;
-        //Sets reference to head. (Which is where the camera position and rotation will be.
         GameObject head = Player.Instance.head;
-
-        #region Exception Call
-        //Exception Call
-        if (target == null)
-        {
-            Debug.LogError("The camera is missing reference for target. Set tag 'Player' on a game object.");
-        }
-        if (head == null)
-        {
-            Debug.LogError("The camera is missing reference for head. Set tag 'Head' on a game object.");
-        }
-        #endregion
-
         //Sets camera position and rotation to where the head is looking forward.
         transform.SetPositionAndRotation(head.transform.position, head.transform.localRotation);
         transform.parent = head.transform;

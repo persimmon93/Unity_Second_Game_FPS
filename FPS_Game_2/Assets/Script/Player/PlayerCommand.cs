@@ -5,6 +5,27 @@ using UnityEngine;
 
 public class PlayerCommand : MonoBehaviour
 {
+    #region PossibleBug
+    /*
+     * [Bug] Not sure if bug but for some reason, if [Serializefield] is not attributed to player,
+     * game does not run. Making player public works but if private or internal, it must have 
+     * serializefield or it doesn't work.
+     * 
+     * [SerializeField] Player player = Player.Instance;             (Works)
+     * [SerializeField] private Player player = Player.Instance;     (Works)
+     * [SerializeField] internal Player player = Player.Instance;    (Works)
+     * public Player player = Player.Instance;                       (Works)
+     * Player player = Player.Instance;                              (Does not work)
+     * private Player player = Player.Instance;                      (Does not work)
+     * internal Player player = Player.Instance;                     (Does not work)
+     * 
+     * Error- (NullReferenceException: Object reference not set to an instance of an object)
+     * */
+    #endregion
+
+    [SerializeField] Player player = Player.Instance;   //local reference
+
+
     /// <summary>
     /// Basic player movement function. Uses rigid MovePosition method.
     /// </summary>
@@ -12,7 +33,8 @@ public class PlayerCommand : MonoBehaviour
     /// <param name="speed"></param>        Player's speed.
     internal void MoveCharacter(Vector3 direction, float speed)
     {
-        Player.Instance.rigidBody.MovePosition(transform.position + (direction * speed * Time.deltaTime));
+        //Player.Instance.rigidBody.MovePosition(transform.position + (direction * speed * Time.deltaTime));
+        player.rigidBody.MovePosition(transform.position + (direction * speed * Time.deltaTime));
     }
 
     /// <summary>
@@ -22,7 +44,7 @@ public class PlayerCommand : MonoBehaviour
     /// <param name="speed"></param>        Player's speed.
     internal void MoveCharacterForce(Vector3 direction, float speed)
     {
-        Player.Instance.rigidBody.AddForce(direction * speed);
+        player.rigidBody.AddForce(direction * speed);
     }
 
     /// <summary>
@@ -31,7 +53,7 @@ public class PlayerCommand : MonoBehaviour
     /// <param name="jumpHeight"></param>
     internal void Jump(float jumpHeight)
     {
-        Player.Instance.rigidBody.velocity += (Vector3.up * jumpHeight);
+        player.rigidBody.velocity += (Vector3.up * jumpHeight);
     }
 
     /// <summary>
@@ -40,7 +62,17 @@ public class PlayerCommand : MonoBehaviour
     /// <returns></returns>
     internal CursorLockMode ChangeCursor()
     {
-        return (Player.Instance.cursorState) ? CursorLockMode.None : CursorLockMode.Locked;
+        return (player.cursorState) ? CursorLockMode.None : CursorLockMode.Locked;
+    }
+
+    internal void PickUp()
+    {
+
+    }
+
+    internal void Drop()
+    {
+
     }
 
 }
