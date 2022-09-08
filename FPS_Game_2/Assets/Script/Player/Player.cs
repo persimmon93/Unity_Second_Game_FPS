@@ -6,7 +6,15 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerCommand))]   //Contains all functions for player.
+[RequireComponent(typeof(Target))]          //Class to identify gameobject as attackable and able to take damage.
+                                            //This contains requirecomponent for rigidbody.
+//[RequireComponent(typeof(Rigidbody))]     Is in Target script.
+[RequireComponent(typeof(PlayerItem))]      //Script that will handle all items for player.
 
+/// NOTE: This script must be executed before the Camera script because the Camera script
+/// depends on references that are initialized in this script.
+[DefaultExecutionOrder(0)] //This should execute this script before any other script but if an error occurs,
+                           //then adjust so this script runs before Camera script in Execution Order.
 
 public class Player : MonoBehaviour
 {
@@ -16,7 +24,8 @@ public class Player : MonoBehaviour
 
     #region Components
     internal Rigidbody rigidBody;
-    [SerializeField] internal PlayerCommand playerCommand;
+    internal PlayerCommand playerCommand;
+    internal PlayerItem playerItem;
     #endregion
 
     #region Player Data
@@ -28,6 +37,7 @@ public class Player : MonoBehaviour
 
     public Vector3 movementDirection;
     internal bool jump;
+    internal bool fire;         //Bool for firing gun. Use for sound and awareness of npcs from gun shot sound.
     public float jumpHeight;
 
     internal bool cursorState;  //0 = Locked 1 = NotLocked
@@ -43,6 +53,7 @@ public class Player : MonoBehaviour
     [SerializeField] internal GameObject head;      //gameobject for player's head.
     #endregion
 
+    public GameObject currentWeapon;
 
     private void Awake()
     {
@@ -60,23 +71,28 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        PlayerReference();
+        LinkPlayerToPlayerModel();
+
         Cursor.lockState = CursorLockMode.Locked;   //Makes cursor disappear when game starts.
         #region PlayerData
         moveSpeed = 10f;
         jumpHeight = 5f;
         distanceToGround = 0.5f;
         #endregion
-
-        if (crossHair == null)
-        {
-            Debug.Log("There is no crosshair for player.");
-        }
-
-        LinkPlayerToPlayerModel();
     }
 
     void Update()
     {
+        if (Input.GetButton("Fire1"))
+        {
+            fire = true;
+        }
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            currentWeapon.transform.GetComponent<Weapon>().Reload();
+        }
+
         movementDirection = transform.right * Input.GetAxis("Horizontal") + transform.forward * Input.GetAxis("Vertical");
 
         #region MouseCursor
@@ -107,12 +123,68 @@ public class Player : MonoBehaviour
         }
         #endregion
 
+        #region Using Weapon
+        if (fire)
+        {
+            currentWeapon.transform.GetComponent<Weapon>().Attack(Camera.Instance.transform);
+            fire = false;
+        }
+        #endregion
+
         #region IsGrounded function
         //Checks the distance between playermodel and ground and returns true/false
         isGrounded = (Physics.Raycast(playerModel.transform.position, Vector3.down, distanceToGround + 0.1f)) ? true : false;
         #endregion
 
     }
+
+
+    //References and exception calls for Player script. Will run once and throw exceptions to null references.
+    private void PlayerReference()
+    {
+        #region Reference
+        rigidBody = transform.GetComponent<Rigidbody>();          //RigidBody reference.
+        rigidBody.freezeRotation = true;                //Prevents collisions from knocking player down.
+        playerCommand = transform.GetComponent<PlayerCommand>();  //PlayerCommand script reference.
+        player = GameObject.FindGameObjectWithTag("Player");    //GameObject for player parent. (Empty object).
+        playerModel = GameObject.FindGameObjectWithTag("PlayerModel");  //GameObject referencing the player model.
+        head = GameObject.FindGameObjectWithTag("Head");    //GameObject referencing for the player's head.
+        playerItem = transform.GetComponent<PlayerItem>();  //Script that will contian all relative data for items.
+        #endregion
+
+        //Stops game if references are null.
+        #region ExceptionCalls
+        if (playerCommand == null)
+        {
+            Debug.LogError("Player script is missing 'PlayerCommand' component!");
+        }
+        if (player == null)
+        {
+            Debug.LogError("Reference for Player is missing! Set a tag 'Player' for a game object.");
+        }
+        if (playerModel == null)
+        {
+            Debug.LogError("Reference for PlayerModel is missing! Set a tag 'PlayerModel' for a game object.");
+        }
+        if (head == null)
+        {
+            Debug.LogError("Reference for Head is missing! Set a tag 'Head' for a game object.");
+        }
+        if (playerItem == null)
+        {
+            Debug.LogError("Player script is missing 'PlayerItem' component!");
+        }
+        #endregion
+
+        //Will notify player if these references are null.
+        #region NotificationCalls
+        if (crossHair == null)
+        {
+            Debug.Log("There is no crosshair for player.");
+        }
+        #endregion
+    }
+
 
     /// <summary>
     /// This will attach player model to the player object via script without manually attaching model to player.

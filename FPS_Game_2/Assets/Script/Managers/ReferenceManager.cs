@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+//REMOVED SCRIPT FROM GAME. MOVED FUNCTIONS BACK TO SCRIPTS RELATIVE TO REFERENCE CALLS.
+
+
 /// <summary>
 /// This script will handle all references and throw an exception if a reference turns up null.
 /// This should be set to run first in the script execution order in the player settings.

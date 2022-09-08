@@ -10,6 +10,7 @@ TagManager:
   - Rifle
   - Sniper
   - Knife
+  - Shotgun
   layers:
   - Default
   - TransparentFX

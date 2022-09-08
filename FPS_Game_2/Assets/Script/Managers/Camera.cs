@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Script for rotation of camera angle.
+/// NOTE: This script must be executed after the player script because it depends on references that are
+/// initialized in the player script.
+/// </summary>
 public class Camera : MonoBehaviour
 {
     #region Singleton
@@ -30,16 +35,27 @@ public class Camera : MonoBehaviour
 
     [SerializeField] internal float lookX;
     [SerializeField] internal float lookY;
+
+    //Amount player is able to rotate axis.
+    private float maxAngleRotationUpwards = -60f;
+    private float maxAngleRotationDownwards = 60f;
+
     float xRotation = 0f;
 
     // Start is called before the first frame update
     void Start()
     {
+        if (Player.Instance.player != null)
+        {
+            Debug.Log("Ran");
+            CameraReference();
+        }
+
         mouseSensitivity = 200f;
 
         GameObject head = Player.Instance.head;
-        //Sets camera position and rotation to where the head is looking forward.
-        transform.SetPositionAndRotation(head.transform.position, head.transform.localRotation);
+        //Sets camera position and rotation to where the head is looking forward + 0.1 position.z. This is to prevent clipping.
+        transform.SetPositionAndRotation(head.transform.position + new Vector3(0, 0, 0.15f), head.transform.localRotation);
         transform.parent = head.transform;
     }
 
@@ -50,7 +66,7 @@ public class Camera : MonoBehaviour
         lookY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
         xRotation -= lookY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        xRotation = Mathf.Clamp(xRotation, maxAngleRotationUpwards, maxAngleRotationDownwards);  //
 
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         target.Rotate(Vector3.up * lookX);
@@ -61,5 +77,20 @@ public class Camera : MonoBehaviour
     void LateUpdate()
     {
 
+    }
+
+    //References and exepction calls for Camera script.
+    private void CameraReference()
+    {
+        //Sets reference to player.
+        target = Player.Instance.player.transform;
+
+        #region Exception Call
+        //Exception Call
+        if (Camera.Instance.target == null)
+        {
+            Debug.LogError("The camera is missing reference for target. There might be no tag 'Player' set on a game object.");
+        }
+        #endregion
     }
 }
