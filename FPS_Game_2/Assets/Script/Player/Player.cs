@@ -10,6 +10,8 @@ using UnityEngine.UI;
                                             //This contains requirecomponent for rigidbody.
 //[RequireComponent(typeof(Rigidbody))]     Is in Target script.
 [RequireComponent(typeof(PlayerItem))]      //Script that will handle all items for player.
+[RequireComponent(typeof(PlayerInventory))] //Script that contains all inventory for player.
+
 
 /// NOTE: This script must be executed before the Camera script because the Camera script
 /// depends on references that are initialized in this script.
@@ -26,6 +28,7 @@ public class Player : MonoBehaviour
     internal Rigidbody rigidBody;
     internal PlayerCommand playerCommand;
     internal PlayerItem playerItem;
+    internal PlayerInventory playerInventory;
     #endregion
 
     #region Player Data
@@ -41,6 +44,9 @@ public class Player : MonoBehaviour
     public float jumpHeight;
 
     internal bool cursorState;  //0 = Locked 1 = NotLocked
+
+    [SerializeField] internal float scrollWheelAxis;  //Float for when player uses mousescroll wheel.
+    internal bool scrolledUp;       //Check to see if player scrolled up. True if wheelAxis is positive. False if negative.
     #endregion
 
     #region UI
@@ -51,6 +57,7 @@ public class Player : MonoBehaviour
     [SerializeField] internal GameObject player;    //Main player gameobject.
     [SerializeField] internal GameObject playerModel;     //player gameobject model.
     [SerializeField] internal GameObject head;      //gameobject for player's head.
+    [SerializeField] private GameObject itemHolder; //Reference to transform where weapon will be held.
     #endregion
 
     public GameObject currentWeapon;
@@ -84,6 +91,9 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        UpdateCurrentWeapon();
+        scrollWheelAxis = Input.GetAxis("Mouse ScrollWheel");
+
         if (Input.GetButton("Fire1"))
         {
             fire = true;
@@ -100,6 +110,12 @@ public class Player : MonoBehaviour
         {
             cursorState = !cursorState;
             Cursor.lockState = playerCommand.ChangeCursor();
+        }
+
+        if (scrollWheelAxis > 0f || scrollWheelAxis < 0f)
+        {
+            playerCommand.ScrollWeapon();
+            scrollWheelAxis = 0f;   //Update. Might not need.
         }
         #endregion
 
@@ -150,6 +166,7 @@ public class Player : MonoBehaviour
         playerModel = GameObject.FindGameObjectWithTag("PlayerModel");  //GameObject referencing the player model.
         head = GameObject.FindGameObjectWithTag("Head");    //GameObject referencing for the player's head.
         playerItem = transform.GetComponent<PlayerItem>();  //Script that will contian all relative data for items.
+        playerInventory = transform.GetComponent<PlayerInventory>();// This will contain items for player.
         #endregion
 
         //Stops game if references are null.
@@ -173,6 +190,10 @@ public class Player : MonoBehaviour
         if (playerItem == null)
         {
             Debug.LogError("Player script is missing 'PlayerItem' component!");
+        }
+        if (playerInventory == null)
+        {
+            Debug.LogError("Player script is missing 'PlayerInventory' component!");
         }
         #endregion
 
@@ -203,6 +224,17 @@ public class Player : MonoBehaviour
             //If the y-axis for Vector3 is 1, it sets isGrounded to always be false. Anywhere between 0.96-0.99 is ideal.
             playerModel.GetComponent<CapsuleCollider>().center = new Vector3(0, 0.97f, 0);
             playerModel.GetComponent<CapsuleCollider>().height = 2;
+        }
+    }
+
+    /// <summary>
+    /// This is temporary for game to work.
+    /// </summary>
+    private void UpdateCurrentWeapon()
+    {
+        if (itemHolder.transform.GetChild(0) != null)
+        {
+            currentWeapon = itemHolder.transform.GetChild(0).gameObject;
         }
     }
 }

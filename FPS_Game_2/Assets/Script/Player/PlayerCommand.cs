@@ -24,7 +24,12 @@ public class PlayerCommand : MonoBehaviour
     #endregion
 
     [SerializeField] Player player = Player.Instance;   //local reference
+    private int weaponPointer;
 
+    void Start()
+    {
+        weaponPointer = 0;
+    }
 
     /// <summary>
     /// Basic player movement function. Uses rigid MovePosition method.
@@ -73,6 +78,44 @@ public class PlayerCommand : MonoBehaviour
     internal void Drop()
     {
 
+    }
+
+    internal void ScrollWeapon()
+    {
+        int previousSelectedWeapon = weaponPointer;
+        //If mouse scrollwheel up, selected weapon should increase. And if it goes beyond childcount, drops to 0.
+        if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+        {
+            weaponPointer = (weaponPointer >= transform.childCount - 1) ? 0 : weaponPointer++;
+        }
+        //If mouse scrollwheel down, selected weapon should decrease. And if it goes below 0, it goes to total child count.
+        if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+        {
+            weaponPointer = (weaponPointer <= 0) ? weaponPointer = transform.childCount - 1 : weaponPointer--;
+        }
+    }
+
+    internal void KeyWeapon()
+    {
+
+    }
+
+    internal void SelectWeapon()
+    {
+        int i = 0;
+        foreach (GameObject weapon in player.playerInventory.inventory)
+        {
+            if (i == weaponPointer)
+            {
+                weapon.gameObject.SetActive(true);
+                Player.Instance.currentWeapon = weapon.gameObject;
+            }
+            else
+            {
+                weapon.gameObject.SetActive(false);
+            }
+            i++;
+        }
     }
 
 }

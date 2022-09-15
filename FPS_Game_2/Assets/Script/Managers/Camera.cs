@@ -56,7 +56,7 @@ public class Camera : MonoBehaviour
         GameObject head = Player.Instance.head;
         //Sets camera position and rotation to where the head is looking forward + 0.1 position.z. This is to prevent clipping.
         transform.SetPositionAndRotation(head.transform.position + new Vector3(0, 0, 0.15f), head.transform.localRotation);
-        transform.parent = head.transform;
+        transform.parent = Player.Instance.transform;
     }
 
     private void Update()
