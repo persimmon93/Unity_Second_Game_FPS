@@ -30,7 +30,7 @@ public class PlayerInventory : MonoBehaviour
             if (i == selectedWeapon)
             {
                 weapon.gameObject.SetActive(true);
-                Player.Instance.currentWeapon = weapon.gameObject;
+                //Player.Instance.currentWeapon = weapon.gameObject;
             } else
             {
                 weapon.gameObject.SetActive(false);

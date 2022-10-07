@@ -1,22 +1,10 @@
+using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
+[RequireComponent(typeof(CharacterController))]
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(PlayerCommand))]   //Contains all functions for player.
-[RequireComponent(typeof(Target))]          //Class to identify gameobject as attackable and able to take damage.
-                                            //This contains requirecomponent for rigidbody.
-//[RequireComponent(typeof(Rigidbody))]     Is in Target script.
-[RequireComponent(typeof(PlayerItem))]      //Script that will handle all items for player.
-[RequireComponent(typeof(PlayerInventory))] //Script that contains all inventory for player.
-
-
-/// NOTE: This script must be executed before the Camera script because the Camera script
-/// depends on references that are initialized in this script.
-[DefaultExecutionOrder(0)] //This should execute this script before any other script but if an error occurs,
-                           //then adjust so this script runs before Camera script in Execution Order.
 
 public class Player : MonoBehaviour
 {
@@ -24,43 +12,31 @@ public class Player : MonoBehaviour
     public static Player Instance { get; private set; }     //Singleton
     #endregion
 
-    #region Components
-    internal Rigidbody rigidBody;
-    internal PlayerCommand playerCommand;
-    internal PlayerItem playerItem;
-    internal PlayerInventory playerInventory;
-    #endregion
 
-    #region Player Data
-    [SerializeField] bool isGrounded;    //Checks to see if player is grounded. Checks with playermodel collider.
-    internal float distanceToGround;
+    [HeaderAttribute("Player Model")]
+    [SerializeField] internal GameObject playerModel;
+    [SerializeField] internal GameObject player;
 
-    [Range(5f, 20f)]
-    [SerializeField] internal float moveSpeed;
+    [HeaderAttribute("Health")]
+    public float maxHealth;
+    [SerializeField] private float health = 100f;
+    public float Health
+    { 
+        get { return health; }
+    }
 
-    public Vector3 movementDirection;
-    internal bool jump;
-    internal bool fire;         //Bool for firing gun. Use for sound and awareness of npcs from gun shot sound.
-    public float jumpHeight;
+    [HeaderAttribute("PlayerController")]
+    private CharacterController controller;
+    private Vector3 playerVelocity;
+    private bool groundedPlayer;
+    [Range(2f, 10f)]
+    private float playerSpeed = 2.0f;
+    private float jumpHeight = 1.0f;
+    private float gravityValue = -9.81f;
 
-    internal bool cursorState;  //0 = Locked 1 = NotLocked
+    private InputManager inputManager;
+    private Transform cameraTransform;
 
-    [SerializeField] internal float scrollWheelAxis;  //Float for when player uses mousescroll wheel.
-    internal bool scrolledUp;       //Check to see if player scrolled up. True if wheelAxis is positive. False if negative.
-    #endregion
-
-    #region UI
-    internal Image crossHair;   //Set Manually.
-    #endregion
-
-    #region GameObjects
-    [SerializeField] internal GameObject player;    //Main player gameobject.
-    [SerializeField] internal GameObject playerModel;     //player gameobject model.
-    [SerializeField] internal GameObject head;      //gameobject for player's head.
-    [SerializeField] private GameObject itemHolder; //Reference to transform where weapon will be held.
-    #endregion
-
-    public GameObject currentWeapon;
 
     private void Awake()
     {
@@ -78,163 +54,73 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        PlayerReference();
-        LinkPlayerToPlayerModel();
-
-        Cursor.lockState = CursorLockMode.Locked;   //Makes cursor disappear when game starts.
-        #region PlayerData
-        moveSpeed = 10f;
-        jumpHeight = 5f;
-        distanceToGround = 0.5f;
-        #endregion
+        maxHealth = health;
+        controller = GetComponent<CharacterController>();
+        cameraTransform = Camera.main.transform;
+        inputManager = InputManager.Instance;
     }
 
     void Update()
     {
-        UpdateCurrentWeapon();
-        scrollWheelAxis = Input.GetAxis("Mouse ScrollWheel");
-
-        if (Input.GetButton("Fire1"))
+        groundedPlayer = controller.isGrounded;
+        if (groundedPlayer && playerVelocity.y < 0)
         {
-            fire = true;
+            playerVelocity.y = -0.1f;
         }
-        if (Input.GetKeyUp(KeyCode.R))
-        {
-            currentWeapon.transform.GetComponent<Weapon>().Reload();
-        }
+        Vector2 movement = inputManager.GetPlayerMovement();
+        Vector3 move = new Vector3(movement.x, 0f, movement.y);
+        move = cameraTransform.forward * move.z + cameraTransform.right * move.x;
+        move.y = 0f;        //move.y may move after above line so sets it to 0 so that player can always jump.
+        controller.Move(move * Time.deltaTime * playerSpeed);
 
-        movementDirection = transform.right * Input.GetAxis("Horizontal") + transform.forward * Input.GetAxis("Vertical");
-
-        #region MouseCursor
-        if (Input.GetMouseButtonDown(2))
+        // Changes the height position of the player.
+        if (inputManager.PlayerJumped() && groundedPlayer)
         {
-            cursorState = !cursorState;
-            Cursor.lockState = playerCommand.ChangeCursor();
+            playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
         }
 
-        if (scrollWheelAxis > 0f || scrollWheelAxis < 0f)
-        {
-            playerCommand.ScrollWeapon();
-            scrollWheelAxis = 0f;   //Update. Might not need.
-        }
-        #endregion
+        playerVelocity.y += gravityValue * Time.deltaTime;
+        controller.Move(playerVelocity * Time.deltaTime);
 
-        if (isGrounded && Input.GetButtonDown("Jump"))
-        {
-            jump = true;
-        }
+        //Makes transform rotate in the direction of camera.
+        transform.rotation = Quaternion.Euler(0, cameraTransform.rotation.eulerAngles.y, 0);
+        //cameraTransform.localEulerAngles = new Vector3(move.x, 0, 0);
+
+        HealthRange();
+        //Debug.Log(inputManager.PlayerRun());
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
-        #region Movement
-        playerCommand.MoveCharacter(movementDirection, moveSpeed);
-        #endregion
-
-        #region Jump
-        if (jump)
-        {
-            playerCommand.Jump(jumpHeight);
-            jump = false;
-        }
-        #endregion
-
-        #region Using Weapon
-        if (fire)
-        {
-            currentWeapon.transform.GetComponent<Weapon>().Attack(Camera.Instance.transform);
-            fire = false;
-        }
-        #endregion
-
-        #region IsGrounded function
-        //Checks the distance between playermodel and ground and returns true/false
-        isGrounded = (Physics.Raycast(playerModel.transform.position, Vector3.down, distanceToGround + 0.1f)) ? true : false;
-        #endregion
 
     }
 
-
-    //References and exception calls for Player script. Will run once and throw exceptions to null references.
-    private void PlayerReference()
+    //Prevents player health from decreasing below 0 or above maxHealth.
+    private void HealthRange()
     {
-        #region Reference
-        rigidBody = transform.GetComponent<Rigidbody>();          //RigidBody reference.
-        rigidBody.freezeRotation = true;                //Prevents collisions from knocking player down.
-        playerCommand = transform.GetComponent<PlayerCommand>();  //PlayerCommand script reference.
-        player = GameObject.FindGameObjectWithTag("Player");    //GameObject for player parent. (Empty object).
-        playerModel = GameObject.FindGameObjectWithTag("PlayerModel");  //GameObject referencing the player model.
-        head = GameObject.FindGameObjectWithTag("Head");    //GameObject referencing for the player's head.
-        playerItem = transform.GetComponent<PlayerItem>();  //Script that will contian all relative data for items.
-        playerInventory = transform.GetComponent<PlayerInventory>();// This will contain items for player.
-        #endregion
-
-        //Stops game if references are null.
-        #region ExceptionCalls
-        if (playerCommand == null)
+        if (health < 0)
         {
-            Debug.LogError("Player script is missing 'PlayerCommand' component!");
+            health = 0;
         }
-        if (player == null)
+        else if (health > maxHealth)
         {
-            Debug.LogError("Reference for Player is missing! Set a tag 'Player' for a game object.");
+            health = maxHealth;
         }
-        if (playerModel == null)
-        {
-            Debug.LogError("Reference for PlayerModel is missing! Set a tag 'PlayerModel' for a game object.");
-        }
-        if (head == null)
-        {
-            Debug.LogError("Reference for Head is missing! Set a tag 'Head' for a game object.");
-        }
-        if (playerItem == null)
-        {
-            Debug.LogError("Player script is missing 'PlayerItem' component!");
-        }
-        if (playerInventory == null)
-        {
-            Debug.LogError("Player script is missing 'PlayerInventory' component!");
-        }
-        #endregion
-
-        //Will notify player if these references are null.
-        #region NotificationCalls
-        if (crossHair == null)
-        {
-            Debug.Log("There is no crosshair for player.");
-        }
-        #endregion
     }
-
 
     /// <summary>
     /// This will attach player model to the player object via script without manually attaching model to player.
     /// </summary>
-    private void LinkPlayerToPlayerModel()
-    {
-        if (playerModel.transform.parent == null)
-        {
-            playerModel.transform.SetParent(player.transform);
-        }
-        //Sets the position of player model to equal position of player.
-        playerModel.transform.position = player.transform.position;
-        if (playerModel.GetComponent<CapsuleCollider>() == null)
-        {
-            playerModel.AddComponent<CapsuleCollider>();
-            //If the y-axis for Vector3 is 1, it sets isGrounded to always be false. Anywhere between 0.96-0.99 is ideal.
-            playerModel.GetComponent<CapsuleCollider>().center = new Vector3(0, 0.97f, 0);
-            playerModel.GetComponent<CapsuleCollider>().height = 2;
-        }
-    }
-
-    /// <summary>
-    /// This is temporary for game to work.
-    /// </summary>
-    private void UpdateCurrentWeapon()
-    {
-        if (itemHolder.transform.GetChild(0) != null)
-        {
-            currentWeapon = itemHolder.transform.GetChild(0).gameObject;
-        }
-    }
+    //private void LinkPlayerToPlayerModel()
+    //{
+    //    //Sets the position of player model to equal position of player.
+    //    playerModel.transform.position = player.transform.position;
+    //    if (playerModel.GetComponent<CapsuleCollider>() == null)
+    //    {
+    //        playerModel.AddComponent<CapsuleCollider>();
+    //        //If the y-axis for Vector3 is 1, it sets isGrounded to always be false. Anywhere between 0.96-0.99 is ideal.
+    //        playerModel.GetComponent<CapsuleCollider>().center = new Vector3(0, 0.97f, 0);
+    //        playerModel.GetComponent<CapsuleCollider>().height = 2;
+    //    }
+    //}
 }

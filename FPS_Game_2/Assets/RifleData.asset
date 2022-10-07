@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48c8d9a811c2bc4429373f9b99d436a5, type: 3}
+  m_Name: RifleData
+  m_EditorClassIdentifier: 
+  itemName: AK-47
+  damage: 50
+  range: 200
+  fireRate: 6
+  nextTimeToFire: 0
+  maxAmmoCount: 30
+  weapontype: 1
+  itemPrefab: {fileID: 0}
+  muzzleFlash: {fileID: 0}

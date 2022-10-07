@@ -1,96 +1,103 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+//using System.Collections;
+//using System.Collections.Generic;
+//using UnityEngine;
 
-/// <summary>
-/// Script for rotation of camera angle.
-/// NOTE: This script must be executed after the player script because it depends on references that are
-/// initialized in the player script.
-/// </summary>
-public class Camera : MonoBehaviour
-{
-    #region Singleton
-    public static Camera Instance { get; private set; }     //Singleton
-    #endregion
+//THIS SCRIPT IS OUTDATED!
 
-    private void Awake()
-    {
-        #region SettingSingleton
-        //Singleton
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-        }
-        else
-        {
-            Instance = this;
-        }
-        #endregion
-    }
 
-    public Transform target;
 
-    [Range(100f, 300f)]
-    public float mouseSensitivity;
 
-    [SerializeField] internal float lookX;
-    [SerializeField] internal float lookY;
+///// <summary>
+///// Script for rotation of camera angle.
+///// NOTE: This script must be executed after the player script because it depends on references that are
+///// initialized in the player script.
+///// </summary>
+//public class Camera : MonoBehaviour
+//{
+//    #region Singleton
+//    public static Camera Instance { get; private set; }     //Singleton
+//    #endregion
 
-    //Amount player is able to rotate axis.
-    private float maxAngleRotationUpwards = -60f;
-    private float maxAngleRotationDownwards = 60f;
+//    private void Awake()
+//    {
+//        #region SettingSingleton
+//        //Singleton
+//        if (Instance != null && Instance != this)
+//        {
+//            Destroy(this);
+//        }
+//        else
+//        {
+//            Instance = this;
+//        }
+//        #endregion
+//    }
 
-    float xRotation = 0f;
+//    public Transform target;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (Player.Instance.player != null)
-        {
-            Debug.Log("Ran");
-            CameraReference();
-        }
+//    [Range(100f, 300f)]
+//    public float mouseSensitivity;
 
-        mouseSensitivity = 200f;
+//    [SerializeField] internal float lookX;
+//    [SerializeField] internal float lookY;
 
-        GameObject head = Player.Instance.head;
-        //Sets camera position and rotation to where the head is looking forward + 0.1 position.z. This is to prevent clipping.
-        transform.SetPositionAndRotation(head.transform.position + new Vector3(0, 0, 0.15f), head.transform.localRotation);
-        transform.parent = Player.Instance.transform;
-    }
+//    //Amount player is able to rotate axis.
+//    private float maxAngleRotationUpwards = -60f;
+//    private float maxAngleRotationDownwards = 60f;
 
-    private void Update()
-    {
-        #region Player Rotation with Mouse.
-        lookX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        lookY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+//    float xRotation = 0f;
 
-        xRotation -= lookY;
-        xRotation = Mathf.Clamp(xRotation, maxAngleRotationUpwards, maxAngleRotationDownwards);  //
+//    // Start is called before the first frame update
+//    void Start()
+//    {
+//        if (Player.Instance.player != null)
+//        {
+//            CameraReference();
+//        }
 
-        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        target.Rotate(Vector3.up * lookX);
-        #endregion
+//        mouseSensitivity = 200f;
 
-    }
-    // Update is called once per frame
-    void LateUpdate()
-    {
+//        //GameObject head = Player.Instance.head;
+//        //Sets camera position and rotation to where the head is looking forward + 0.1 position.z. This is to prevent clipping.
+//        //transform.SetPositionAndRotation(head.transform.position + new Vector3(0, 0, 0.15f), head.transform.localRotation);
+//        transform.parent = Player.Instance.transform;
+//    }
 
-    }
+//    private void Update()
+//    {
+//        #region Player Rotation with Mouse.
+//        lookX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+//        lookY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-    //References and exepction calls for Camera script.
-    private void CameraReference()
-    {
-        //Sets reference to player.
-        target = Player.Instance.player.transform;
+//        xRotation -= lookY;
+//        xRotation = Mathf.Clamp(xRotation, maxAngleRotationUpwards, maxAngleRotationDownwards);  //
 
-        #region Exception Call
-        //Exception Call
-        if (Camera.Instance.target == null)
-        {
-            Debug.LogError("The camera is missing reference for target. There might be no tag 'Player' set on a game object.");
-        }
-        #endregion
-    }
-}
+//        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+//        target.Rotate(Vector3.up * lookX);
+//        #endregion
+
+//    }
+//    // Update is called once per frame
+//    void LateUpdate()
+//    {
+
+//    }
+
+//    //References and exepction calls for Camera script.
+//    private void CameraReference()
+//    {
+//        //Sets reference to player.
+//        if (target == null)
+//        {
+//            target = Player.Instance.player.transform;
+//        }
+
+//        #region Exception Call
+//        //Exception Call
+//        if (Camera.Instance.target == null)
+//        {
+//            Debug.LogError("The camera is missing reference for target. There might be no tag 'Player' set on a game object.");
+//        }
+//        #endregion
+//    }
+//}
