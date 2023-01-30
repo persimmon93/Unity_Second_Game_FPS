@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+//No longer using after switching to character controller and using inputsystems.
 //Class that will handle player movement, jump, and checks to see if player is grounded.
+
 public class PlayerMotor : MonoBehaviour
 {
     private Rigidbody rb;

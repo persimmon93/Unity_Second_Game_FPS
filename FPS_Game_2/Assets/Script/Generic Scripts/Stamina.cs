@@ -1,15 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Target))]
-[RequireComponent(typeof(HealthNPC))]
-public class NPC : MonoBehaviour
+public class Stamina : MonoBehaviour
 {
+    private float _stamina;
+    private bool staminaExhaust;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        if (_stamina <= 0)
+        {
+            _stamina = 100f;
+        }
     }
 
     // Update is called once per frame

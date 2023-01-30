@@ -9,7 +9,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     #region Singleton
-    public static Player Instance { get; private set; }     //Singleton
+    //public static Player Instance { get; private set; }     //Singleton
     #endregion
 
 
@@ -18,12 +18,9 @@ public class Player : MonoBehaviour
     [SerializeField] internal GameObject player;
 
     [HeaderAttribute("Health")]
-    public float maxHealth;
-    [SerializeField] private float health = 100f;
-    public float Health
-    { 
-        get { return health; }
-    }
+    [SerializeField] private float maxHealth;
+    [SerializeField] private float currentHealth = 100f;
+    public float GetHealth { get { return currentHealth; }}
 
     [HeaderAttribute("PlayerController")]
     private CharacterController controller;
@@ -37,8 +34,9 @@ public class Player : MonoBehaviour
     private InputManager inputManager;
     private Transform cameraTransform;
 
+    bool isDead;
 
-    private void Awake()
+    /*private void Awake()
     {
         #region SettingSingleton
         //Singleton
@@ -51,10 +49,11 @@ public class Player : MonoBehaviour
         }
         #endregion
     }
+    */
 
     void Start()
     {
-        maxHealth = health;
+        maxHealth = currentHealth;
         controller = GetComponent<CharacterController>();
         cameraTransform = Camera.main.transform;
         inputManager = InputManager.Instance;
@@ -86,7 +85,6 @@ public class Player : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, cameraTransform.rotation.eulerAngles.y, 0);
         //cameraTransform.localEulerAngles = new Vector3(move.x, 0, 0);
 
-        HealthRange();
         //Debug.Log(inputManager.PlayerRun());
     }
 
@@ -95,32 +93,33 @@ public class Player : MonoBehaviour
 
     }
 
-    //Prevents player health from decreasing below 0 or above maxHealth.
-    private void HealthRange()
+    /// <summary>
+    /// Method that will add or subtract amount passed in from health. Changes player's alive status after
+    /// adding or subtracting health. This will be used by games to set 
+    /// </summary>
+    /// <param name="amount"></param> Amount to be added or subtracted from player's health.
+    public void AddHealth(float amount)
     {
-        if (health < 0)
+        float healthChange = currentHealth + amount;
+        if (healthChange > maxHealth)
         {
-            health = 0;
+            isDead = false;
+            currentHealth = maxHealth;
+        } else if (healthChange < 0){
+            currentHealth = 0;
+            isDead = true;
         }
-        else if (health > maxHealth)
+        else
         {
-            health = maxHealth;
+            isDead = false;
+            currentHealth = healthChange;
         }
     }
 
-    /// <summary>
-    /// This will attach player model to the player object via script without manually attaching model to player.
-    /// </summary>
-    //private void LinkPlayerToPlayerModel()
-    //{
-    //    //Sets the position of player model to equal position of player.
-    //    playerModel.transform.position = player.transform.position;
-    //    if (playerModel.GetComponent<CapsuleCollider>() == null)
-    //    {
-    //        playerModel.AddComponent<CapsuleCollider>();
-    //        //If the y-axis for Vector3 is 1, it sets isGrounded to always be false. Anywhere between 0.96-0.99 is ideal.
-    //        playerModel.GetComponent<CapsuleCollider>().center = new Vector3(0, 0.97f, 0);
-    //        playerModel.GetComponent<CapsuleCollider>().height = 2;
-    //    }
-    //}
+    //Enables player to set health regardless of game bound rules.
+    public float SetHealth
+    {
+        get { return currentHealth; }
+        set { currentHealth = value; }
+    }
 }
