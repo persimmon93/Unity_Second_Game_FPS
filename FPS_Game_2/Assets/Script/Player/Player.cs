@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     [Range(2f, 10f)]
-    private float playerSpeed = 2.0f;
+    private float playerSpeed = 211.0f;
     private float jumpHeight = 1.0f;
     private float gravityValue = -9.81f;
 

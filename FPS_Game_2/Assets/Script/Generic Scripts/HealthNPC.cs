@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static Unity.Burst.Intrinsics.X86;
 
-public class HealthNPC : HealthBase
+public class HealthNPC : BaseData
 {
     /// <summary>
     /// This class should be added to game objects that will possess health and 
