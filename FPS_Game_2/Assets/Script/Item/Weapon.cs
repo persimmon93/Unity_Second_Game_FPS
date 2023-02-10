@@ -94,12 +94,12 @@ public class Weapon : WeaponSO
             RaycastHit hit;
             if (Physics.Raycast(origin.position, origin.forward, out hit, range))
             {
-                Target target = hit.transform.GetComponent<Target>();
+                HealthClass target = hit.transform.GetComponent<HealthClass>();
                 //If target is null, it is an environment.
                 if (target != null)
                 {
                     hit.rigidbody.AddForce(-hit.normal * impactForce);
-                    target.Health -= damage;
+                    target.SetMaxHealth(damage);
                 }
 
 

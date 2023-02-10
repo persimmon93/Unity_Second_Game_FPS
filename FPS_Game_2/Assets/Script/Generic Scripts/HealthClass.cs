@@ -9,7 +9,6 @@ public class HealthClass : MonoBehaviour
     private float health;
     private float maxHealth;
 
-    //Main method that handles the changing of health.
     public virtual void ChangeHealth(float amount)
     {
         if (health + amount > maxHealth)
@@ -24,7 +23,6 @@ public class HealthClass : MonoBehaviour
         }
     }
 
-    //Sets the max health to passed in parameter.
     public void SetMaxHealth(float amount)
     {
         if (amount <= 0)
@@ -36,7 +34,6 @@ public class HealthClass : MonoBehaviour
         }
     }
 
-    //Command to set health to max.
     public void ResetHealth()
     {
         health = maxHealth;

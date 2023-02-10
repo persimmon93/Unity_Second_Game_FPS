@@ -3,12 +3,11 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "New NPC", menuName = "NPC", order = 1)]
 
-[RequireComponent(typeof(HealthClass), typeof(NPC_Class))]
 public class NPC_ScriptableObject : ScriptableObject
 {
     public new string name;
     public static int id;
-    [TextArea(100, 10000)]
+    [TextArea(20, 20)]
     public string description = "Comment Here.";
 
     public GameObject npc_gameobject;
