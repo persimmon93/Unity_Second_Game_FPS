@@ -2,11 +2,15 @@ using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField]
     private CinemachineVirtualCamera playerCam;
+
+
+    //public PlayerUserInterface userInterface;
 
     [Range(100f, 300f)]
     public float mouseSensitivity = 200f;
@@ -40,6 +44,7 @@ public class PlayerCamera : MonoBehaviour
         CameraRotation2();
     }
 
+    //Old One
     //private void CameraRotation()
     //{
     //    lookX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;

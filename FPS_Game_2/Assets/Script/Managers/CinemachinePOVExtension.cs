@@ -4,6 +4,8 @@ using Cinemachine;
 //Overrides the CinemachineVirtual camaera in player so that angle in Aim can be changed by InputManager's mouse delta.
 public class CinemachinePOVExtension : CinemachineExtension
 {
+
+    public PlayerUserInterface userInterface;
     [SerializeField]
     private float mouseSpeed = 10f;
 
@@ -35,6 +37,27 @@ public class CinemachinePOVExtension : CinemachineExtension
                 //startingRotation.x = Mathf.Clamp(startingRotation.x, -clampAngle, clampAngle);
                 startingRotation.y = Mathf.Clamp(startingRotation.y, -clampAngle, clampAngle);
                 state.RawOrientation = Quaternion.Euler(-startingRotation.y, startingRotation.x, 0f);
+            }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        //This should only run if raycast hits something.
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, 200f))  //Change 200f too field vision of scriptable object.
+        {
+            //var target = hit.transform.GetComponent<MainClass_NPC>();
+            MainClass_NPC target = hit.transform.GetComponent<MainClass_NPC>();
+
+            //If target is null, it is an environment.
+            if (target != null)
+            {
+                userInterface.DisplayHealth();
+                userInterface.SetTargetInfo(target.name, target.healthClassScript.GetMaxHealth(), target.healthClassScript.GetHealth());
+            } else
+            {
+                userInterface.UnDisplayHealth();
             }
         }
     }

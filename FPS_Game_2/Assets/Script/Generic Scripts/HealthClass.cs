@@ -9,6 +9,7 @@ public class HealthClass : MonoBehaviour
     private float health;
     private float maxHealth;
 
+    //Health will not go above maxHealth or below 0.
     public virtual void ChangeHealth(float amount)
     {
         if (health + amount > maxHealth)
@@ -43,7 +44,7 @@ public class HealthClass : MonoBehaviour
         return health;
     }
 
-    protected float GetMaxHealth()
+    public float GetMaxHealth()
     {
         return maxHealth;
     }
