@@ -6,22 +6,14 @@ using UnityEngine;
 //This Class should handle all operations related to health.
 public class HealthClass : MonoBehaviour
 {
-    private float health;
-    private float maxHealth;
+    [SerializeField] private float health;
+    [SerializeField] private float maxHealth;
 
     //Health will not go above maxHealth or below 0.
     public virtual void ChangeHealth(float amount)
     {
-        if (health + amount > maxHealth)
-        {
-            health = maxHealth;
-        } else if (health + amount <= 0)
-        {
-            health = 0;
-        } else
-        {
-            health += amount;
-        }
+        health += amount;
+        health = Mathf.Clamp(health, 0, maxHealth);
     }
 
     public void SetMaxHealth(float amount)

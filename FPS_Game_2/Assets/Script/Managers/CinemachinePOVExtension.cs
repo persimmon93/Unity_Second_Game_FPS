@@ -1,5 +1,6 @@
 using UnityEngine;
 using Cinemachine;
+using Unity.VisualScripting;
 
 //Overrides the CinemachineVirtual camaera in player so that angle in Aim can be changed by InputManager's mouse delta.
 public class CinemachinePOVExtension : CinemachineExtension
@@ -12,6 +13,9 @@ public class CinemachinePOVExtension : CinemachineExtension
     [SerializeField]
     private float clampAngle = 80f;
 
+    float rangeToPickUpItems = 3f;
+
+    RaycastHit hit;
 
     private InputManager inputManager;
     private Vector3 startingRotation;
@@ -41,24 +45,54 @@ public class CinemachinePOVExtension : CinemachineExtension
         }
     }
 
+    private void OnEnable()
+    {
+        if (userInterface != null)
+            Debug.LogWarning("Userinterface reference missing for camera");
+    }
     private void FixedUpdate()
     {
-        //This should only run if raycast hits something.
-        RaycastHit hit;
+        DisplayEnemy();
+        DisplayWeapon();
+    }
+
+    private void DisplayEnemy()
+    {
         if (Physics.Raycast(transform.position, transform.forward, out hit, 200f))  //Change 200f too field vision of scriptable object.
         {
+            //NEED TO MAKE IT SO THAT RAYCAST HITS OUT OF CAMERA.
+            Debug.DrawRay(transform.position, transform.forward * 100.0f, Color.red);
             //var target = hit.transform.GetComponent<MainClass_NPC>();
             MainClass_NPC target = hit.transform.GetComponent<MainClass_NPC>();
 
             //If target is null, it is an environment.
             if (target != null)
             {
-                userInterface.DisplayHealth();
+                userInterface.DisplayHealth(target.healthClassScript.GetMaxHealth(), target.healthClassScript.GetHealth());
                 userInterface.SetTargetInfo(target.name, target.healthClassScript.GetMaxHealth(), target.healthClassScript.GetHealth());
-            } else
+            }
+            else
             {
                 userInterface.UnDisplayHealth();
             }
         }
     }
+
+    private void DisplayWeapon()
+    {
+        if (Physics.Raycast(transform.position, transform.forward, out hit, rangeToPickUpItems))
+        {
+            Debug.DrawRay(transform.position, transform.forward * 100.0f, Color.yellow);
+            WeaponClass weapon = hit.transform.GetComponent<WeaponClass>();
+            if (weapon != null)
+            {
+                userInterface.DisplayItem(weapon.GetName(), weapon.GetDescription(), weapon.GetAmmoCount(), weapon.GetMaxAmmo());
+            } else
+            {
+                userInterface.UnDisplayItem();
+            }
+        }
+    }
+
+
 }

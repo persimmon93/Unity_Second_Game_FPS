@@ -2,7 +2,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(HealthClass), typeof(MainClass_NPC))]
 public class MainClass_NPC : MonoBehaviour
 {
 
@@ -41,18 +40,21 @@ public class MainClass_NPC : MonoBehaviour
         }
 
         //Setting NPC Health
-        healthClassScript = GetComponent<HealthClass>();
+        healthClassScript = (healthClassScript == null) ? gameObject.AddComponent<HealthClass>() :
+            GetComponent<HealthClass>();
         healthClassScript.SetMaxHealth(scriptableObject.health);
         healthClassScript.ResetHealth();
 
         //RigidBody
-        rb = transform.AddComponent<Rigidbody>();
+        rb = (rb == null) ? gameObject.AddComponent<Rigidbody>() :
+            GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezePositionY;
         rb.isKinematic = true;
         rb.useGravity = true;
 
         //Capsule Collider Later Change too game object.
-        cc = transform.AddComponent<CapsuleCollider>();
+        cc = (cc == null) ? gameObject.AddComponent<CapsuleCollider>() :
+            GetComponent<CapsuleCollider>();
         cc.isTrigger = true;
         cc.center = new Vector3(0, 1, 0);
         cc.radius = 0.3f;

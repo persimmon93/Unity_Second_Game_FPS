@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Dummy
   description: This is an NPC dummy
-  npc_gameobject: {fileID: 0}
-  health: 0
-  speed: 0
-  field_vision: 0
+  prefab: {fileID: 1880789382203377077, guid: e4681eed47cf0bc4c9fb8da1cea75d09, type: 3}
+  image: {fileID: 0}
+  health: 100
+  speed: 2
+  field_vision: 50

@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8cafda9cf810b148b25e50b9a711135, type: 3}
   m_Name: Player
   m_EditorClassIdentifier: 
-  name: 
+  name: Player
   description: Comment Here.
-  prefab: {fileID: 0}
+  prefab: {fileID: 2461661788012012150, guid: aa87cbfda213ad74ea621a10fb2772c8, type: 3}
   image: {fileID: 0}
   health: 100
-  speed: 10
-  field_vision: 10
+  speed: 2
+  field_vision: 100

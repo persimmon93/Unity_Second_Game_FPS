@@ -11,12 +11,10 @@ public class PlayerController : MonoBehaviour
     private float jumpHeight = 1.0f;
     private float gravityValue = -9.81f;
 
-    private void Start()
+    private void Start()    //Maybe make onEnabled
     {
-        if (controller == null)
-            controller = gameObject.AddComponent<CharacterController>();
-        else
-            controller = GetComponent<CharacterController>();
+        controller = (controller == null) ? gameObject.AddComponent<CharacterController>()
+            : GetComponent<CharacterController>();
 
     }
 
@@ -43,6 +41,30 @@ public class PlayerController : MonoBehaviour
         }
 
         playerVelocity.y += gravityValue * Time.deltaTime;
+        controller.Move(playerVelocity * Time.deltaTime);
+    }
+
+    /// <summary>
+    /// This method receives the input command from the player for horizontal and vertical movement.
+    /// </summary>
+    /// <param name="playerMoveVector"></param>
+    /// <param name="speed"></param>
+    public void PlayerMove(Vector3 playerMoveVector, float speed)
+    {
+        if (!groundedPlayer)
+            return;
+        controller.Move(playerMoveVector * Time.deltaTime * speed);
+        if (playerMoveVector != Vector3.zero)
+        {
+            gameObject.transform.forward = playerMoveVector;    //Makes gameobject face forward to movement.
+        }
+    }
+
+    public void Jump(Vector3 playerJumpVector, float jumpHeight)
+    {
+        if (!groundedPlayer)
+            return;
+        playerJumpVector.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
     }
 }
