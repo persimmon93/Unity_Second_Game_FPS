@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: AK47
   description: This is ak
-  prefab: {fileID: 9140417497900542201, guid: 9160741e60e96244ca92bed7ce4f0fd2, type: 3}
+  prefab: {fileID: 9140417497900542201, guid: 8c0d4865a84268440bc7b288322b9e58, type: 3}
   image: {fileID: 0}
   damage: 40
   range: 100
   fireRate: 2
   maxAmmoCount: 30
-  impactForce: 186
+  impactForce: 140
   weapontype: 0
-  muzzleFlash: {fileID: 0}
+  muzzleFlash: {fileID: 8078759435898811124, guid: 8c0d4865a84268440bc7b288322b9e58, type: 3}
   hitEffect: {fileID: 0}

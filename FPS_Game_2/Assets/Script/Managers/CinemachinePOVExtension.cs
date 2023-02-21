@@ -60,7 +60,7 @@ public class CinemachinePOVExtension : CinemachineExtension
     {
         if (Physics.Raycast(transform.position, transform.forward, out hit, 200f))  //Change 200f too field vision of scriptable object.
         {
-            //NEED TO MAKE IT SO THAT RAYCAST HITS OUT OF CAMERA.
+            //Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition); 
             Debug.DrawRay(transform.position, transform.forward * 100.0f, Color.red);
             //var target = hit.transform.GetComponent<MainClass_NPC>();
             MainClass_NPC target = hit.transform.GetComponent<MainClass_NPC>();

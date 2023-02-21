@@ -1,4 +1,4 @@
-using Cinemachine;
+//using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,74 +6,84 @@ using static UnityEngine.UI.Image;
 
 public class PlayerCamera : MonoBehaviour
 {
-    [SerializeField]
-    private CinemachineVirtualCamera playerCam;
+    [SerializeField] public Camera camera;
 
-
-    //public PlayerUserInterface userInterface;
-
+    public PlayerUserInterface userInterface;
+    private float clampAngle = 80f;
+    private float rangeToPickUpItems = 3f;
     [Range(100f, 300f)]
     public float mouseSensitivity = 200f;
 
-    [SerializeField] private float lookX, lookY;
+    private Vector3 rotateCamera;
 
-    //Amount player is able to rotate axis.
-    private float maxAngleRotationUpwards = -60f;
-    private float maxAngleRotationDownwards = 60f;
-    float xRotation = 0f;
-
-    private void Awake()
+    private void OnEnable()
     {
-        if (playerCam == null)
-        {
-            playerCam = transform.GetComponentInChildren<CinemachineVirtualCamera>();
-        }
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (playerCam == null)
-        {
-            Debug.LogError("There is no component for cinemachine camera within player.");
-        }
+        camera = Camera.main;
+        if (userInterface == null)
+            Debug.LogWarning("Userinterface reference missing for camera");
+        if (rotateCamera == null)
+            rotateCamera = transform.localRotation.eulerAngles;
     }
 
     // Update is called once per frame
     void Update()
     {
-        CameraRotation2();
+        CameraRotation();
+        DisplayEnemy();
+        DisplayWeapon();
     }
 
-    //Old One
-    //private void CameraRotation()
-    //{
-    //    lookX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-    //    lookY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-
-    //    xRotation -= lookY;
-    //    xRotation = Mathf.Clamp(xRotation, maxAngleRotationUpwards, maxAngleRotationDownwards);
-
-    //    //camera.transform.localRotation = Quaternion.AngleAxis(xRotation * mouseSensitivity, Vector3.up);
-    //    playerCam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-    //    transform.Rotate(Vector3.up * lookX);
-    //}
-
-    private void CameraRotation2()
+    private void FixedUpdate()
     {
-        transform.rotation = Quaternion.AngleAxis(lookX * mouseSensitivity, Vector3.up);
 
-        var angles = transform.localEulerAngles;
-        angles.z = 0;
+    }
 
-        var angle = transform.localEulerAngles.x;
-        if (angle > 180 && angle < 340)
+    private void CameraRotation()
+    {
+        rotateCamera.x += Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        rotateCamera.y += Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        rotateCamera.y = Mathf.Clamp(rotateCamera.y, -clampAngle, clampAngle);
+
+        //This will handle rotate camera.
+        camera.transform.rotation = Quaternion.Euler(-rotateCamera.y, rotateCamera.x, 0f);
+    }
+
+    private void DisplayEnemy()
+    {
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        Debug.DrawRay(ray.GetPoint(0f), transform.forward * 100.0f, Color.red);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 200f))  //Change 200f too field vision of scriptable object.
         {
-            angles.x = 340;
-        } else if (angle < 180 && angle > 40)
-        {
-            angles.x = 40;
+            MainClass_NPC target = hit.transform.GetComponent<MainClass_NPC>();
+
+            //If target is null, it is an environment.
+            if (target != null)
+            {
+                userInterface.DisplayHealth(target.healthClassScript.GetMaxHealth(), target.healthClassScript.GetHealth());
+                userInterface.SetTargetInfo(target.name, target.healthClassScript.GetMaxHealth(), target.healthClassScript.GetHealth());
+            }
+            else
+            {
+                userInterface.UnDisplayHealth();
+            }
         }
+    }
 
-        transform.localEulerAngles = angles;
+    private void DisplayWeapon()
+    {
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, rangeToPickUpItems))
+        {
+            WeaponClass weapon = hit.transform.GetComponent<WeaponClass>();
+            if (weapon != null)
+            {
+                userInterface.DisplayItem(weapon.GetName(), weapon.GetDescription(), weapon.GetAmmoCount(), weapon.GetMaxAmmo());
+            }
+            else
+            {
+                userInterface.UnDisplayItem();
+            }
+        }
     }
 }
