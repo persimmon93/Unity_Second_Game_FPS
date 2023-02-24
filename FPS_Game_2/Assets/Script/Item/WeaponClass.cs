@@ -20,12 +20,13 @@ public class WeaponClass : MonoBehaviour
     [SerializeField] private float fireRate;
     [SerializeField] private int maxAmmoCount;
     [SerializeField] private float impactForce;
+    [SerializeField] private GameObject hitEffect;
 
     [HeaderAttribute("Weapon Data Not from Scriptable Object")]
     [SerializeField] private int currentAmmoCount;
     [SerializeField] private float nextTimeToFire;
 
-
+    [SerializeField] private BoxCollider boxCollider;
     private void OnEnable()
     {
         if (scriptableObject == null)
@@ -41,7 +42,9 @@ public class WeaponClass : MonoBehaviour
         maxAmmoCount = scriptableObject.maxAmmoCount;
         impactForce = scriptableObject.impactForce;
         nextTimeToFire = 0f;
-        CreateModel();
+        transform.gameObject.tag = "Item";
+        hitEffect = scriptableObject.hitEffect;
+        CreateModel();  //Maybe move this to a spawn manager.
     }
 
     public void CreateModel()
@@ -55,7 +58,14 @@ public class WeaponClass : MonoBehaviour
                 return;
             }
         }
-        Instantiate(scriptableObject.prefab, transform, false);
+        Instantiate(scriptableObject.prefab, transform, transform);
+        //This creates a new box collider in the gameobject containing this script and sets the size to the size
+        //of prefab boxcollider. The box collider in the child still exists.
+        if (boxCollider == null)
+        {
+            boxCollider = gameObject.AddComponent<BoxCollider>();
+            boxCollider.size = scriptableObject.prefab.gameObject.GetComponent<BoxCollider>().size;
+        }
     }
 
 
@@ -82,20 +92,20 @@ public class WeaponClass : MonoBehaviour
             //This should only run if raycast hits something.
             //Add accuracy implementation later.
             RaycastHit hit;
-            if (Physics.Raycast(origin.position, origin.forward, out hit, scriptableObject.range))
+            if (Physics.Raycast(origin.position, origin.forward, out hit, range))
             {
                 HealthClass target = hit.transform.GetComponent<HealthClass>();
                 //If target is null, it is an environment.
                 if (target != null)
                 {
-                    hit.rigidbody.AddForce(-hit.normal * scriptableObject.impactForce);
+                    hit.rigidbody.AddForce(-hit.normal * impactForce);
                     target.SetMaxHealth(scriptableObject.damage);
                 }
 
 
                 //Creates gameobject with the effect of bullet impact.
                 //Possible future idea is to add an array of different hitEffects for flesh, wood, metal effects.
-                GameObject impactGO = Instantiate(scriptableObject.hitEffect, hit.point,
+                GameObject impactGO = Instantiate(hitEffect, hit.point,
                     Quaternion.LookRotation(hit.normal));
                 Destroy(impactGO, 1f);
             }

@@ -7,6 +7,9 @@ TagManager:
   - PlayerModel
   - Head
   - NPCHealthUI
+  - UserInterface
+  - Enemy_NPC
+  - Item
   layers:
   - Default
   - TransparentFX

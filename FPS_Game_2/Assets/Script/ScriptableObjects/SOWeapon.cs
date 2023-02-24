@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "Item", menuName = "Scriptble Object/Item/Weapons", order = 2)]
+[RequireComponent(typeof(WeaponClass))]
 public class SOWeapon : ScriptableObject
 {
     [HeaderAttribute("Weapon Data")]

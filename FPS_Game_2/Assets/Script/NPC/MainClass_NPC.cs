@@ -40,23 +40,23 @@ public class MainClass_NPC : MonoBehaviour
         }
 
         //Setting NPC Health
-        healthClassScript = (healthClassScript == null) ? gameObject.AddComponent<HealthClass>() :
-            GetComponent<HealthClass>();
+        healthClassScript = (gameObject.GetComponent<HealthClass>() == null) ? gameObject.AddComponent<HealthClass>(): 
+            gameObject.GetComponent<HealthClass>();
         healthClassScript.SetMaxHealth(scriptableObject.health);
         healthClassScript.ResetHealth();
 
         //RigidBody
-        rb = (rb == null) ? gameObject.AddComponent<Rigidbody>() :
+        rb = (gameObject.GetComponent<Rigidbody>() == null) ? gameObject.AddComponent<Rigidbody>() :
             GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezePositionY;
         rb.isKinematic = true;
         rb.useGravity = true;
 
         //Capsule Collider Later Change too game object.
-        cc = (cc == null) ? gameObject.AddComponent<CapsuleCollider>() :
+        cc = (gameObject.GetComponent<CapsuleCollider>() == null) ? gameObject.AddComponent<CapsuleCollider>() :
             GetComponent<CapsuleCollider>();
         cc.isTrigger = true;
-        cc.center = new Vector3(0, 1, 0);
+        cc.center = new Vector3(0, 0, 0);
         cc.radius = 0.3f;
         cc.height = 2;
 

@@ -5,7 +5,11 @@ using UnityEngine;
 public class PlayerInventory : MonoBehaviour
 {
 
-    internal List<GameObject> inventory;
+    protected List<GameObject> inventory;
+    protected GameObject currentEquippedItem;
+    protected float itemInteractionRange = 5f;
+
+
     //List<Item> itemList;
     public int selectedWeapon;
     // Start is called before the first frame update

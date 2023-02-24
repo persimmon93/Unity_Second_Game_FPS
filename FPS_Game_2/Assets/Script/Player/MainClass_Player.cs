@@ -82,12 +82,12 @@ public class MainClass_Player : MonoBehaviour
         camera = Camera.main;
         inputManager = ManualInputManager.Instance;
 
-        healthClassScript = (healthClassScript == null) ? gameObject.AddComponent<HealthClass>()
+        healthClassScript = (gameObject.GetComponent<HealthClass>() == null) ? gameObject.AddComponent<HealthClass>()
             : gameObject.GetComponent<HealthClass>();
         healthClassScript.SetMaxHealth(scriptableObject.health);
         healthClassScript.ResetHealth();
 
-        inventory = (inventory == null) ? gameObject.AddComponent<InventoryClass>() :
+        inventory = (gameObject.GetComponent<InventoryClass>() == null) ? gameObject.AddComponent<InventoryClass>() :
             gameObject.GetComponent<InventoryClass>();
     }
 
