@@ -13,17 +13,22 @@ public class MainClass_Player : MonoBehaviour
     #endregion
 
     [HeaderAttribute("ScriptableObject")]
-    public SOLivingObject scriptableObject;
+    public SO_LivingObject scriptableObject;
 
     [HeaderAttribute("Player Model")]
     [SerializeField] public GameObject playerModel;
     [SerializeField] public GameObject player;
 
     [HeaderAttribute("Health")]
-    public HealthClass healthClassScript;
+    protected HealthClass healthClassScript;
+
+    [HeaderAttribute("Camera")]
+    protected CameraClass cameraClass;
 
     [HeaderAttribute("Inventory")]
     public InventoryClass inventory;
+    public GameObject itemHoldPosition;
+    public WeaponClass equippedWeapon;
 
     [HeaderAttribute("PlayerController")]
     [SerializeField] private CharacterController controller;
@@ -38,7 +43,6 @@ public class MainClass_Player : MonoBehaviour
 
     [SerializeField] private float rangeToPickUpItems = 3f;
     private ManualInputManager inputManager;
-    private Camera camera;
 
     [HeaderAttribute("Player Status")]
     [SerializeField] private bool isGrounded;
@@ -47,8 +51,10 @@ public class MainClass_Player : MonoBehaviour
     [SerializeField] private bool isRunning;
     [SerializeField] private bool isFire1;
     [SerializeField] private bool isFire2;
-    [SerializeField] private bool canPickUp;
+    [SerializeField] private bool isPickingUp;
+    [SerializeField] private bool isReloading;
     bool isDead;
+
 
     /*private void Awake()
     {
@@ -79,7 +85,6 @@ public class MainClass_Player : MonoBehaviour
 
         controller = GetComponent<CharacterController>();
         isGrounded = controller.isGrounded;
-        camera = Camera.main;
         inputManager = ManualInputManager.Instance;
 
         healthClassScript = (gameObject.GetComponent<HealthClass>() == null) ? gameObject.AddComponent<HealthClass>()
@@ -89,12 +94,13 @@ public class MainClass_Player : MonoBehaviour
 
         inventory = (gameObject.GetComponent<InventoryClass>() == null) ? gameObject.AddComponent<InventoryClass>() :
             gameObject.GetComponent<InventoryClass>();
+        cameraClass = Camera.main.GetComponent<CameraClass>();
     }
 
     void Update()
     {
         //Makes transform rotate in the direction of camera.
-        transform.rotation = Quaternion.Euler(0, camera.transform.rotation.eulerAngles.y, 0);
+        transform.rotation = Quaternion.Euler(0, Camera.main.transform.rotation.eulerAngles.y, 0);
         IsGroundedImplementation();
         //Below actions shoud not run if not grounded.
         if (!isGrounded)
@@ -105,7 +111,8 @@ public class MainClass_Player : MonoBehaviour
         InputRunning();
         InputFire1();
         InputFire2();
-        PickUpWeapon();
+        InputPickUp();
+        InputReload();
     }
 
     private void LateUpdate()
@@ -146,25 +153,42 @@ public class MainClass_Player : MonoBehaviour
     private void InputFire1()
     {
         isFire1 = (Input.GetButton("Fire1")) ? true : false;
-
+        if (isFire1 && equippedWeapon != null)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            equippedWeapon.Attack(ray);
+        }
     }
 
     private void InputFire2()
     {
         isFire2 = (Input.GetButton("Fire2")) ? true : false;
-
     }
 
-    private void PickUpWeapon()
+    private void InputReload()
     {
-        RaycastHit raycastHit;
-        canPickUp = (Physics.Raycast(Camera.main.transform.position,
-            Camera.main.transform.forward,
-            out raycastHit,
-            rangeToPickUpItems)
-            == gameObject.GetComponent<WeaponClass>()) ? true : false;
-        //if (canPickUp)
+        isReloading = (Input.GetKey(KeyCode.R)) ? true : false;
+        if (isReloading)
+        {
+            inventory.ammo = equippedWeapon.Reload(inventory.ammo);
+        }
     }
+
+    private void InputPickUp()
+    {
+        if (cameraClass.waitingPickUp == null)
+            return;
+        isPickingUp = (Input.GetKey(KeyCode.E)) ? true : false;
+        if (isPickingUp)
+        {
+            equippedWeapon = cameraClass.waitingPickUp.GetComponent<WeaponClass>();
+            equippedWeapon.transform.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+            cameraClass.waitingPickUp.transform.parent = itemHoldPosition.transform;
+            cameraClass.waitingPickUp.transform.localPosition = Vector3.zero;
+            cameraClass.waitingPickUp.transform.localRotation = Quaternion.identity;
+        }
+    }
+
     //Maybe make this a manager method, accessible by all things.
     private void IsGroundedImplementation()
     {

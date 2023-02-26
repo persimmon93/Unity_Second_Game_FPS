@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "Living Object", menuName = "Scriptble Object/Living Object", order = 1)]
 
-public class SOLivingObject : ScriptableObject
+public class SO_LivingObject : ScriptableObject
 {
     public new string name;
     [TextArea(20, 20)]
@@ -21,8 +21,10 @@ public class SOLivingObject : ScriptableObject
     [Range(50f, 500f)]
     public float field_vision;
 
+    //Effect displayed upon being hit.
+    public GameObject hitEffect;
 
-    SOLivingObject()
+    SO_LivingObject()
     {
         health = 100f;
         speed = 2f;

@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8cafda9cf810b148b25e50b9a711135, type: 3}
   m_Name: NPC_Testing
   m_EditorClassIdentifier: 
-  name: Dummy
+  name: Enemy
   description: This is an NPC dummy
   prefab: {fileID: 1880789382203377077, guid: e4681eed47cf0bc4c9fb8da1cea75d09, type: 3}
   image: {fileID: 0}
   health: 100
   speed: 2
   field_vision: 50
+  hitEffect: {fileID: 3282891075962071788, guid: cfdb963ec1f6e034482ed2d7a0785a4d, type: 3}

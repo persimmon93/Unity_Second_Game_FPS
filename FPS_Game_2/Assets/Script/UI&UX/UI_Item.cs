@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class UIItem : MonoBehaviour
+public class UI_Item : MonoBehaviour
 {
     //Public ItemClass item;
     public TMP_Text itemName;

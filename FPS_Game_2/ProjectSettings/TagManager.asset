@@ -10,6 +10,7 @@ TagManager:
   - UserInterface
   - Enemy_NPC
   - Item
+  - NPC
   layers:
   - Default
   - TransparentFX

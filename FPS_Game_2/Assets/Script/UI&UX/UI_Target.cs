@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UITarget : MonoBehaviour
+public class UI_Target : MonoBehaviour
 {
     //UI reference for target the player is focused on.
     public TMP_Text targetName;

@@ -6,13 +6,30 @@ using TMPro;
 using Unity.VisualScripting;
 using System;
 
-public class UIMainHandler : MonoBehaviour
+public class UI_MainHandler : MonoBehaviour
 {
+    #region Singleton
+    public static UI_MainHandler Instance { get; private set; }     //Singleton
+    #endregion
 
-    [SerializeField] protected UITarget uiTarget;
-    [SerializeField] protected UIItem uiItem;
+    public UI_Target uiTarget;
+    public UI_Item uiItem;
 
     [SerializeField] internal Image cursor;
+
+    private void Awake()
+{
+    #region SettingSingleton
+    //Singleton
+    if (Instance != null && Instance != this)
+    {
+        Destroy(this);
+    } else
+    {
+        Instance = this;
+    }
+    #endregion
+}
 
 
     private void Update()
@@ -36,7 +53,7 @@ public class UIMainHandler : MonoBehaviour
     {
         switch(objectTag)
         {
-            case "Enemy_NPC":
+            case "NPC":
                 uiTarget.npc = target.transform.gameObject.GetComponent<MainClass_NPC>();
                 uiTarget.transform.gameObject.SetActive(true);
                 break;

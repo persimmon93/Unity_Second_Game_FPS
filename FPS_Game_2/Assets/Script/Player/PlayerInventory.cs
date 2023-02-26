@@ -9,6 +9,7 @@ public class PlayerInventory : MonoBehaviour
     protected GameObject currentEquippedItem;
     protected float itemInteractionRange = 5f;
 
+    public int ammo = 70;
 
     //List<Item> itemList;
     public int selectedWeapon;

@@ -17,12 +17,11 @@ public class MainClass_NPC : MonoBehaviour
     private float movementSpeed;
     private float fieldVision;
 
-    public HealthClass healthClassScript;
-    public Rigidbody rb;    //Maybe set private later
-    public CapsuleCollider cc;  //maybe set private later and change to gameobject.
+    [SerializeField] internal HealthClass healthClassScript;
+    [SerializeField] internal GameObject hitEffect; 
 
     //ScriptableObject data.
-    public SOLivingObject scriptableObject;  //Any value from SOLivingObject should only be used in start.
+    public SO_LivingObject scriptableObject;  //Any value from SOLivingObject should only be used in start.
 
 
     private bool isDead;
@@ -38,27 +37,12 @@ public class MainClass_NPC : MonoBehaviour
         {
             Debug.LogError(this.gameObject + " is missing a reference to scriptable object.");
         }
-
+        gameObject.tag = "NPC";
         //Setting NPC Health
         healthClassScript = (gameObject.GetComponent<HealthClass>() == null) ? gameObject.AddComponent<HealthClass>(): 
             gameObject.GetComponent<HealthClass>();
         healthClassScript.SetMaxHealth(scriptableObject.health);
         healthClassScript.ResetHealth();
-
-        //RigidBody
-        rb = (gameObject.GetComponent<Rigidbody>() == null) ? gameObject.AddComponent<Rigidbody>() :
-            GetComponent<Rigidbody>();
-        rb.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezePositionY;
-        rb.isKinematic = true;
-        rb.useGravity = true;
-
-        //Capsule Collider Later Change too game object.
-        cc = (gameObject.GetComponent<CapsuleCollider>() == null) ? gameObject.AddComponent<CapsuleCollider>() :
-            GetComponent<CapsuleCollider>();
-        cc.isTrigger = true;
-        cc.center = new Vector3(0, 0, 0);
-        cc.radius = 0.3f;
-        cc.height = 2;
 
         //Setting Info
         name = scriptableObject.name;
@@ -66,22 +50,9 @@ public class MainClass_NPC : MonoBehaviour
         movementSpeed = scriptableObject.speed;
         fieldVision = scriptableObject.field_vision;
 
-
+        //Setting hit effect. Instantiated object when it is hit with bullet.
+        hitEffect = scriptableObject.hitEffect;
         //Create game object model if it doesn't exist.
-        CreateModel();
-    }
-
-    public void CreateModel()
-    {
-        //Instantiate game object model if it is null.
-        foreach (GameObject gameObjectModel in transform)
-        {
-            if (gameObjectModel.name == "Model")
-            {
-                return;
-            }
-        }
-        Instantiate(scriptableObject.prefab, transform, true);
     }
 
     //Physics for NPC
