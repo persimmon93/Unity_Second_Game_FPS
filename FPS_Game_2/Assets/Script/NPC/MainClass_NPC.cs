@@ -16,12 +16,13 @@ public class MainClass_NPC : MonoBehaviour
     private string description;
     private float movementSpeed;
     private float fieldVision;
+    [SerializeField] private LivingClass npcClassification;
+    [SerializeField] private bool essentialCharacter;   //If true, prevents death.
 
     [SerializeField] internal HealthClass healthClassScript;
-    [SerializeField] internal GameObject hitEffect; 
 
     //ScriptableObject data.
-    public SO_LivingObject scriptableObject;  //Any value from SOLivingObject should only be used in start.
+    public NPCScriptableObject scriptableObject;  //Any value from SOLivingObject should only be used in start.
 
 
     private bool isDead;
@@ -37,7 +38,7 @@ public class MainClass_NPC : MonoBehaviour
         {
             Debug.LogError(this.gameObject + " is missing a reference to scriptable object.");
         }
-        gameObject.tag = "NPC";
+        //gameObject.tag = "NPC";
         //Setting NPC Health
         healthClassScript = (gameObject.GetComponent<HealthClass>() == null) ? gameObject.AddComponent<HealthClass>(): 
             gameObject.GetComponent<HealthClass>();
@@ -50,8 +51,9 @@ public class MainClass_NPC : MonoBehaviour
         movementSpeed = scriptableObject.speed;
         fieldVision = scriptableObject.field_vision;
 
+        gameObject.tag = "NPC";
+        npcClassification = scriptableObject.classification;
         //Setting hit effect. Instantiated object when it is hit with bullet.
-        hitEffect = scriptableObject.hitEffect;
         //Create game object model if it doesn't exist.
     }
 

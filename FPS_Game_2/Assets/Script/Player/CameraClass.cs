@@ -8,7 +8,7 @@ public class CameraClass : MonoBehaviour
 {
     [HeaderAttribute("Camera Components")]
 
-    public UI_MainHandler userInterface;
+    public UI_Manager userInterface;
     private float clampAngle = 80f;
 
     [Range(100f, 300f)]
@@ -23,7 +23,8 @@ public class CameraClass : MonoBehaviour
 
     private void Start()
     {
-
+        if (userInterface == null)
+            userInterface = UI_Manager.Instance;
     }
 
     private void OnEnable()
@@ -77,6 +78,7 @@ public class CameraClass : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, closeInteractionRange) && hit.transform.gameObject.tag != "Untagged")
         {
             //Checks to see if item is able to be picked up. Gets info to be displayed before pick up.
+            //Learn about event listener so that when button is pressed, picks up.
             if (hit.transform.gameObject.GetComponent<ItemPickUp>())
             {
                 waitingPickUp = hit.transform.gameObject;

@@ -19,4 +19,5 @@ MonoBehaviour:
   health: 100
   speed: 2
   field_vision: 50
+  classification: 1
   hitEffect: {fileID: 3282891075962071788, guid: cfdb963ec1f6e034482ed2d7a0785a4d, type: 3}

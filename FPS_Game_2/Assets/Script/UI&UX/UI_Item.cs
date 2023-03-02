@@ -10,7 +10,7 @@ public class UI_Item : MonoBehaviour
     public TMP_Text itemDescription;
     public TMP_Text itemAmmo;
 
-    public WeaponClass weapon;   //If ray hits weapon, should set weapon.
+    public GunClass weapon;   //If ray hits weapon, should set weapon.
 
     private void OnEnable()
     {
@@ -29,9 +29,9 @@ public class UI_Item : MonoBehaviour
         itemAmmo.gameObject.SetActive(true);
         if (weapon != null)
         {
-            itemName.text = weapon.GetName();
-            itemDescription.text = weapon.GetDescription();
-            itemAmmo.text = "Ammo\n" + weapon.GetAmmoCount() + " / " + weapon.GetMaxAmmo();
+            itemName.text = weapon.name;
+            itemDescription.text = weapon.description;
+            itemAmmo.text = "Ammo\n" + weapon.currentAmmoCount + " / " + weapon.maxAmmoCount;
         }
     }
 

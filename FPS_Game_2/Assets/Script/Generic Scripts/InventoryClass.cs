@@ -5,7 +5,7 @@ using UnityEngine;
 public class InventoryClass : MonoBehaviour
 {
     public GameObject currentEquippedItem;
-    public WeaponClass[] weaponInventory;
+    public GunClass[] weaponInventory;
     public int ammo = 100;
 
     // Start is called before the first frame update

@@ -16,6 +16,8 @@ MonoBehaviour:
   description: Comment Here.
   prefab: {fileID: 2461661788012012150, guid: aa87cbfda213ad74ea621a10fb2772c8, type: 3}
   image: {fileID: 0}
-  health: 100
+  health: 19000
   speed: 2
   field_vision: 100
+  classification: 0
+  hitEffect: {fileID: 0}
