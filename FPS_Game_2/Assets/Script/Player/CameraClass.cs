@@ -8,7 +8,7 @@ public class CameraClass : MonoBehaviour
 {
     [HeaderAttribute("Camera Components")]
 
-    public UI_Manager userInterface;
+    private Manager_UI userInterface;
     private float clampAngle = 80f;
 
     [Range(100f, 300f)]
@@ -23,14 +23,14 @@ public class CameraClass : MonoBehaviour
 
     private void Start()
     {
-        if (userInterface == null)
-            userInterface = UI_Manager.Instance;
+
     }
 
     private void OnEnable()
     {
+        userInterface = GetComponentInParent<MainClass_Player>().userInterface;
         if (userInterface == null)
-            Debug.LogWarning("Userinterface reference missing for camera");
+            Debug.LogWarning("Userinterface referenceData doesn't exist for parent of camera");
         if (rotateCamera == null)
             rotateCamera = transform.localRotation.eulerAngles;
     }
@@ -57,17 +57,16 @@ public class CameraClass : MonoBehaviour
         transform.rotation = Quaternion.Euler(-rotateCamera.y, rotateCamera.x, 0f);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void FarInteraction()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Debug.DrawRay(ray.GetPoint(0f), transform.forward * farInteractionRange, Color.red);
-        if (Physics.Raycast(ray, out RaycastHit hit, farInteractionRange) && hit.transform.gameObject.tag != "Untagged")
+        if (Physics.Raycast(ray, out RaycastHit hit, farInteractionRange))
         {
-            string gameObjectTag = (string)hit.transform.gameObject.tag;
-            userInterface.FarInteraction(hit, gameObjectTag);   //Passes in object hit and the tag of hit object.
-        } else
-        {
-            userInterface.FarInteraction();  //Makese Active = false.
+            userInterface.TargetNPC(hit);   //Passes in object hit.
         }
     }
 
@@ -75,7 +74,7 @@ public class CameraClass : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Debug.DrawRay(ray.GetPoint(0f), transform.forward * closeInteractionRange, Color.green);
-        if (Physics.Raycast(ray, out RaycastHit hit, closeInteractionRange) && hit.transform.gameObject.tag != "Untagged")
+        if (Physics.Raycast(ray, out RaycastHit hit, closeInteractionRange))
         {
             //Checks to see if item is able to be picked up. Gets info to be displayed before pick up.
             //Learn about event listener so that when button is pressed, picks up.
@@ -83,15 +82,13 @@ public class CameraClass : MonoBehaviour
             {
                 waitingPickUp = hit.transform.gameObject;
             }
-            string gameObjectTag = (string)hit.transform.gameObject.tag;
-            userInterface.CloseInteraction(hit, gameObjectTag);
-        } else
-        {
-            if (waitingPickUp != null)
+
+            //Test this later Maybe
+            if (GetComponentInParent<MainClass_Player>().transform.gameObject.GetComponent<ItemPickUp>())
             {
-                waitingPickUp = null;
+                waitingPickUp = hit.transform.gameObject;
             }
-            userInterface.CloseInteraction();
+            userInterface.TargetItem(hit);
         }
     }
 }

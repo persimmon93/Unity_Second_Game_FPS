@@ -21,6 +21,7 @@ public class MainClass_Player : MonoBehaviour
 
     [HeaderAttribute("Camera")]
     protected CameraClass cameraClass;
+    public AudioSource audioSource;
 
     [HeaderAttribute("Inventory")]
     public InventoryClass inventory;
@@ -28,7 +29,7 @@ public class MainClass_Player : MonoBehaviour
     public GunClass equippedWeapon;
 
     [HeaderAttribute("UserInterface")]
-    public UI_Manager userInterface;
+    public Manager_UI userInterface;
 
 
     [HeaderAttribute("PlayerController")]
@@ -49,7 +50,7 @@ public class MainClass_Player : MonoBehaviour
     [SerializeField] private bool isRunning;
     [SerializeField] private bool isFire1;
     [SerializeField] private bool isFire2;
-    [SerializeField] private bool isPickingUp;
+    [SerializeField] internal bool isPickingUp;
     [SerializeField] private bool isReloading;
     bool isDead;
 
@@ -70,8 +71,6 @@ public class MainClass_Player : MonoBehaviour
     */
     private void Awake()
     {
-        if (userInterface == null)
-            userInterface = UI_Manager.Instance;
 
     }
 
@@ -80,14 +79,14 @@ public class MainClass_Player : MonoBehaviour
         if (so_player == null)
             Debug.LogError("Missing Scriptable Object for player.");
         if (userInterface == null)
-            Debug.LogError("Missing reference to MainUserInterface class.");
+            Debug.LogError("Missing referenceData to MainUserInterface class.");
     }
 
     private void OnEnable()
     {
         if (so_player == null)
         {
-            Debug.LogError("Player is missing reference to Scriptable Object");
+            Debug.LogError("Player is missing referenceData to Scriptable Object");
         }
 
         controller = GetComponent<CharacterController>();
@@ -100,7 +99,11 @@ public class MainClass_Player : MonoBehaviour
 
         inventory = (gameObject.GetComponent<InventoryClass>() == null) ? gameObject.AddComponent<InventoryClass>() :
             gameObject.GetComponent<InventoryClass>();
+
         cameraClass = Camera.main.GetComponent<CameraClass>();
+        audioSource = cameraClass.GetComponent<AudioSource>();
+
+        userInterface.PlayerInfoSetHealth(healthClassScript);
     }
 
     void Update()
@@ -108,6 +111,11 @@ public class MainClass_Player : MonoBehaviour
         //Makes transform rotate in the direction of camera.
         transform.rotation = Quaternion.Euler(0, Camera.main.transform.rotation.eulerAngles.y, 0);
         IsGroundedImplementation();
+
+        userInterface.PlayerInfoSetWeapon(equippedWeapon);
+
+        InputFire1();
+        InputFire2();
         //Below actions shoud not run if not grounded.
         if (!isGrounded)
             return;
@@ -115,12 +123,15 @@ public class MainClass_Player : MonoBehaviour
         InputMovement();
         InputJump();
         InputRunning();
-        InputFire1();
-        InputFire2();
         InputPickUp();
         InputReload();
 
-        UpdatePlayerUI();
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            healthClassScript.ChangeHealth(-10);
+            userInterface.PlayerInfoQuickChangeHealth(healthClassScript);
+        }
     }
 
     private void LateUpdate()
@@ -193,14 +204,11 @@ public class MainClass_Player : MonoBehaviour
             cameraClass.waitingPickUp.transform.parent = itemHoldPosition.transform;
             cameraClass.waitingPickUp.transform.localPosition = Vector3.zero;
             cameraClass.waitingPickUp.transform.localRotation = Quaternion.identity;
+
+            userInterface.PlayerInfoSetWeapon(equippedWeapon);
         }
     }
 
-    private void UpdatePlayerUI()
-    {
-        userInterface.UpdatePlayerUIWeapon(equippedWeapon);
-        userInterface.UpdatePlayerUIHealth(healthClassScript);
-    }
     //Maybe make this a manager method, accessible by all things.
     private void IsGroundedImplementation()
     {

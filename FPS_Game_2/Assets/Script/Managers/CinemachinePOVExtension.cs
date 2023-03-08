@@ -48,7 +48,7 @@
 //    private void OnEnable()
 //    {
 //        if (userInterface != null)
-//            Debug.LogWarning("Userinterface reference missing for camera");
+//            Debug.LogWarning("Userinterface referenceData missing for camera");
 //    }
 //    private void FixedUpdate()
 //    {

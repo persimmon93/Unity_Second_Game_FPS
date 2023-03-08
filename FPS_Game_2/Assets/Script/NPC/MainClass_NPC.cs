@@ -6,7 +6,7 @@ public class MainClass_NPC : MonoBehaviour
 {
 
     /// <summary>
-    /// This class will reference the different scripts the NPC will have and handle
+    /// This class will referenceData the different scripts the NPC will have and handle
     /// all game operations relative to the NPC.
     /// </summary>
     /// 
@@ -32,11 +32,16 @@ public class MainClass_NPC : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        
+    }
+
     private void OnEnable()
     {
         if (scriptableObject == null)
         {
-            Debug.LogError(this.gameObject + " is missing a reference to scriptable object.");
+            Debug.LogError(this.gameObject + " is missing a referenceData to scriptable object.");
         }
         //gameObject.tag = "NPC";
         //Setting NPC Health
@@ -71,5 +76,13 @@ public class MainClass_NPC : MonoBehaviour
     public string GetDescription()
     {
         return description;
+    }
+
+    public void Death()
+    {
+        if (!essentialCharacter && healthClassScript.GetHealth() <= 0f)
+        {
+            Destroy(gameObject);
+        }
     }
 }

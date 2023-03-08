@@ -25,16 +25,17 @@ public class GunClass : MonoBehaviour
     [SerializeField] internal int maxAmmoCount;
     [SerializeField] internal float impactForce;
     [SerializeField] internal ParticleSystem muzzleFlash;
-
+    [SerializeField] internal AudioClip shootingAudio;
+    [SerializeField] internal AudioClip reloadingAudio;
     //[HeaderAttribute("Weapon Data Not from Scriptable Object")]
     [SerializeField] internal int currentAmmoCount;
     [SerializeField] internal float nextTimeToFire;
-
+    [SerializeField] internal AudioSource audioSource;
     private void OnEnable()
     {
         if (gunScriptObject == null)
         {
-            Debug.LogWarning("GunClass is missing a GunScriptableObject reference!");
+            Debug.LogWarning("GunClass is missing a GunScriptableObject referenceData!");
             return;
         }
         name = gunScriptObject.name;
@@ -47,6 +48,10 @@ public class GunClass : MonoBehaviour
         impactForce = (damage / 10) * 100;
         muzzleFlash = GetComponentInChildren<ParticleSystem>();
 
+        shootingAudio = gunScriptObject.shootingAudio;
+        reloadingAudio = gunScriptObject.reloadingAudio;
+
+        audioSource = (gameObject.GetComponent<AudioSource>() == null) ? gameObject.AddComponent<AudioSource>() : GetComponent<AudioSource>();
         nextTimeToFire = 0f;
     }
 
@@ -65,8 +70,18 @@ public class GunClass : MonoBehaviour
             nextTimeToFire = Time.time + (1f / fireRate);
             currentAmmoCount--;
 
-            muzzleFlash.Play();
-            //Play Audio here.
+            //Play ParticleEffects here.
+            if (muzzleFlash != null)
+            {
+                muzzleFlash.Play();
+            }
+
+            //Play Audio Here.
+            if (shootingAudio != null)
+            {
+                audioSource.clip = shootingAudio;
+                audioSource.Play();
+            }
 
             if (Physics.Raycast(muzzleFlash.transform.position,
                 -muzzleFlash.transform.forward, //MuzzleFlash is inversed
@@ -116,7 +131,7 @@ public class GunClass : MonoBehaviour
         }
         else
         {
-            currentAmmoCount = ammo;
+            currentAmmoCount += ammo;
             ammo = 0;   //All ammo will be put in gun.
         }
         return ammo;

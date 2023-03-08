@@ -86,7 +86,7 @@
 //    //References and exepction calls for Camera script.
 //    private void CameraReference()
 //    {
-//        //Sets reference to player.
+//        //Sets referenceData to player.
 //        if (target == null)
 //        {
 //            target = Player.Instance.player.transform;
@@ -96,7 +96,7 @@
 //        //Exception Call
 //        if (Camera.Instance.target == null)
 //        {
-//            Debug.LogError("The camera is missing reference for target. There might be no tag 'Player' set on a game object.");
+//            Debug.LogError("The camera is missing referenceData for target. There might be no tag 'Player' set on a game object.");
 //        }
 //        #endregion
 //    }

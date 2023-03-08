@@ -21,12 +21,16 @@ public class GunScriptableObject : ScriptableObject
     [SerializeField] public float fireRate;  //Rate of fire. The lower it is, the slower it shoots.
     [SerializeField] public int maxAmmoCount;
 
-    [SerializeField] public ParticleSystem muzzleFlash;
+    //[SerializeField] public ParticleSystem muzzleFlash;
 
 
     [SerializeField] public ItemPickUp itemPickUp;
 
     [SerializeField] public WeaponType weapontype;
+
+
+    [SerializeField] public AudioClip shootingAudio;
+    [SerializeField] public AudioClip reloadingAudio;
 
     private void OnEnable()
     {
@@ -38,8 +42,6 @@ public class GunScriptableObject : ScriptableObject
         }
         itemPickUp = (!prefab.GetComponent<ItemPickUp>()) ? prefab.AddComponent<ItemPickUp>() : prefab.GetComponent<ItemPickUp>();
 
-        var particleSystemMain = muzzleFlash.main;
-        particleSystemMain.loop = true;
     }
 }
 
