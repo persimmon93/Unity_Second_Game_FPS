@@ -1,3 +1,4 @@
+using FPS_Game;
 using System.Security.Cryptography;
 using Unity.Mathematics;
 using UnityEditor;
@@ -11,45 +12,48 @@ using UnityEngine.UI;
 /// For now this is a generic weapons script. For special weapons, will need to make separate classes for weapons.
 /// </summary>
 
-public class GunClass : MonoBehaviour
+public class GunClass : BaseItem
 {
     [SerializeField] public GunScriptableObject gunScriptObject;
 
     //[HeaderAttribute("Weapon Data Inherited from Scriptable Object")]
-    [SerializeField] internal string name;
-    [SerializeField] internal string description;
-    [SerializeField] internal Sprite gunSprite;
-    [SerializeField] internal float damage;
-    [SerializeField] internal float range;
-    [SerializeField] internal float fireRate;
-    [SerializeField] internal int maxAmmoCount;
-    [SerializeField] internal float impactForce;
-    [SerializeField] internal ParticleSystem muzzleFlash;
-    [SerializeField] internal AudioClip shootingAudio;
-    [SerializeField] internal AudioClip reloadingAudio;
+    internal new string name = "Gun";
+    internal new string description = "This is a gun.";
+    internal Sprite gunSprite;
+    internal float damage = 10f;
+    internal float range = 100f;
+    internal float fireRate = 5f;
+    internal int maxAmmoCount = 7;
+    //Index 0 should be shooting and index 1 should be reloading.
+    internal AudioClip[] gunAudio;
+
     //[HeaderAttribute("Weapon Data Not from Scriptable Object")]
+    internal ParticleSystem muzzleFlash;
+    internal float impactForce;
     [SerializeField] internal int currentAmmoCount;
-    [SerializeField] internal float nextTimeToFire;
-    [SerializeField] internal AudioSource audioSource;
+    internal float nextTimeToFire;
+    internal Interactable itemPickUp;
+
+    internal AudioSource audioSource;
     private void OnEnable()
     {
-        if (gunScriptObject == null)
+        if (gunScriptObject != null)
         {
-            Debug.LogWarning("GunClass is missing a GunScriptableObject referenceData!");
-            return;
+            name = gunScriptObject.name;
+            description = gunScriptObject.description;
+            gunSprite = gunScriptObject.sprite;
+            damage = gunScriptObject.damage;
+            range = gunScriptObject.range;
+            fireRate = gunScriptObject.fireRate;
+            maxAmmoCount = gunScriptObject.maxAmmoCount;
+            gunAudio = gunScriptObject.gunAudio;
         }
-        name = gunScriptObject.name;
-        description = gunScriptObject.description;
-        gunSprite = gunScriptObject.sprite;
-        damage = gunScriptObject.damage;
-        range = gunScriptObject.range;
-        fireRate = gunScriptObject.fireRate;
-        maxAmmoCount = gunScriptObject.maxAmmoCount;
+        //Add Interactable Component.
+        itemPickUp = (!GetComponent<Interactable>()) ? gameObject.AddComponent<Interactable>() : GetComponent<Interactable>();
+
+
         impactForce = (damage / 10) * 100;
         muzzleFlash = GetComponentInChildren<ParticleSystem>();
-
-        shootingAudio = gunScriptObject.shootingAudio;
-        reloadingAudio = gunScriptObject.reloadingAudio;
 
         audioSource = (gameObject.GetComponent<AudioSource>() == null) ? gameObject.AddComponent<AudioSource>() : GetComponent<AudioSource>();
         nextTimeToFire = 0f;
@@ -60,7 +64,7 @@ public class GunClass : MonoBehaviour
 
     }
 
-    public void Shoot()
+    public override void PrimaryUse()
     {
         if (currentAmmoCount <= 0)
             return;
@@ -77,9 +81,9 @@ public class GunClass : MonoBehaviour
             }
 
             //Play Audio Here.
-            if (shootingAudio != null)
+            if (gunAudio[0] != null)
             {
-                audioSource.clip = shootingAudio;
+                audioSource.clip = gunAudio[0];
                 audioSource.Play();
             }
 
@@ -88,7 +92,7 @@ public class GunClass : MonoBehaviour
                 out RaycastHit hit,
                 gunScriptObject.range))
             {
-                Debug.DrawRay(muzzleFlash.transform.position, -muzzleFlash.transform.forward * 300f, Color.black);
+                Debug.DrawRay(muzzleFlash.transform.position, muzzleFlash.transform.forward * range, Color.black);
                 if (hit.transform.GetComponent<HitEffect>())
                 {
                     GameObject hitEffect = Instantiate(hit.transform.GetComponent<HitEffect>().hitEffect,
@@ -111,13 +115,23 @@ public class GunClass : MonoBehaviour
         }
     }
 
-    //Ammo is the total amount of ammo in inventory.
+    /// <summary>
+    /// Ammo is the total amount of ammo in inventory.
+    /// </summary>
+    /// <param name="ammo"></param>
+    /// <returns></returns>
     public int Reload(int ammo)
     {
         //Run animation here.
 
 
 
+        //Run Audio here.
+        if (gunAudio[1] != null)
+        {
+            audioSource.clip = gunAudio[1];
+            audioSource.Play();
+        }
 
         //Calculate how much ammo is required.
         int requiredAmmo = gunScriptObject.maxAmmoCount - currentAmmoCount;
@@ -137,7 +151,10 @@ public class GunClass : MonoBehaviour
         return ammo;
     }
 
+    private void Drop()
+    {
 
+    }
     //public void Shoot()
     //{
     //    gunScriptObject.muzzleFlash.Play();

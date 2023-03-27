@@ -19,6 +19,11 @@ public class SpawnObject : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Spawns gameobject after passed in parameter.
+    /// </summary>
+    /// <param name="spawnTime"></param>
+    /// <returns></returns>
     IEnumerator Spawn(float spawnTime)
     {
         yield return new WaitForSeconds(spawnTime);

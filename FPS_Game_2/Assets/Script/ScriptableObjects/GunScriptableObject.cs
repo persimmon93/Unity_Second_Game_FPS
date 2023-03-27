@@ -9,28 +9,21 @@ public class GunScriptableObject : ScriptableObject
 {
     [HeaderAttribute("Weapon Data")]
     public new string name;
-    [TextArea(10, 10)]
+    [TextArea(5, 5)]
     public string description = "Comment Here.";
     public GameObject prefab;
     public Sprite sprite;
 
     [HeaderAttribute("Weapon Stats")]
-    [SerializeField] public float damage;
-    [SerializeField] public float range;    //Bullet range after fired.
+    public float damage;
+    public float range;    //Bullet range after fired.
     [Range(0.1f, 15f)]
-    [SerializeField] public float fireRate;  //Rate of fire. The lower it is, the slower it shoots.
-    [SerializeField] public int maxAmmoCount;
+    public float fireRate;  //Rate of fire. The lower it is, the slower it shoots.
+    public int maxAmmoCount;
 
-    //[SerializeField] public ParticleSystem muzzleFlash;
-
-
-    [SerializeField] public ItemPickUp itemPickUp;
-
-    [SerializeField] public WeaponType weapontype;
-
-
-    [SerializeField] public AudioClip shootingAudio;
-    [SerializeField] public AudioClip reloadingAudio;
+    [HeaderAttribute("Weapon Audio")]
+    public AudioClip[] gunAudio;
+    public WeaponType weapontype;
 
     private void OnEnable()
     {
@@ -40,8 +33,6 @@ public class GunScriptableObject : ScriptableObject
             Debug.LogWarning("Gun prefab is missing!");
             return;
         }
-        itemPickUp = (!prefab.GetComponent<ItemPickUp>()) ? prefab.AddComponent<ItemPickUp>() : prefab.GetComponent<ItemPickUp>();
-
     }
 }
 
@@ -51,4 +42,4 @@ public enum WeaponType
     Rifle,
     Sniper,
     Shotgun
-} 
+}

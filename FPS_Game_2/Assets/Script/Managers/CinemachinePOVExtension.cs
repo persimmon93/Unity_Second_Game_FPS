@@ -68,8 +68,8 @@
 //            //If target is null, it is an environment.
 //            if (target != null)
 //            {
-//                //userInterface.DisplayHealth(target.healthClassScript.GetMaxHealth(), target.healthClassScript.GetHealth());
-//                //userInterface.SetTargetInfo(target.name, target.healthClassScript.GetMaxHealth(), target.healthClassScript.GetHealth());
+//                //userInterface.DisplayHealth(target.playerHealth.GetMaxHealth(), target.playerHealth.GetHealth());
+//                //userInterface.SetTargetInfo(target.name, target.playerHealth.GetMaxHealth(), target.playerHealth.GetHealth());
 //            }
 //            else
 //            {
