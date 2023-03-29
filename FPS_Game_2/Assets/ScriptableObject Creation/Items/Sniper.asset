@@ -20,7 +20,7 @@ MonoBehaviour:
   range: 500
   fireRate: 2.25
   maxAmmoCount: 20
-  itemPickUp: {fileID: -7886398749604230287, guid: 9bb08868fdb63cc44a2e27744f4784fe, type: 3}
+  gunAudio:
+  - {fileID: 8300000, guid: bd83c36222ec1c0448601661f1573860, type: 3}
+  - {fileID: 0}
   weapontype: 2
-  shootingAudio: {fileID: 8300000, guid: ad9869d4800c2eb4d96fe6af321889da, type: 3}
-  reloadingAudio: {fileID: 0}

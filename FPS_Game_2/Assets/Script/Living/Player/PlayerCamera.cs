@@ -1,4 +1,5 @@
 //using Cinemachine;
+using FPS_Game;
 using UnityEngine;
 using UserInterface;
 
@@ -70,10 +71,11 @@ namespace Player
             Debug.DrawRay(ray.GetPoint(0f), transform.forward * maxInteractionDistance, Color.red);
             if (Physics.Raycast(ray, out RaycastHit hit, maxInteractionDistance))
             {
-                if (hit.transform.gameObject.GetComponent<Interactable>() && mainClass.controls.isPickingUp)
+                IPickUpAble pickUpAble = hit.transform.GetComponent<IPickUpAble>();
+                if (pickUpAble != null && mainClass.controls.isPickingUp)
                 {
                     //Returns gameobject prefab of interactable
-                    mainClass.itemEquip = hit.transform.GetComponent<Interactable>().InteractingObject(hit.distance);
+                    mainClass.itemEquip = hit.transform.GetComponent<IPickUpAble>().PickUp();
                 }
                 userInterface.TargetItem(hit);
                 userInterface.TargetNPC(hit);   //Passes in object hit.

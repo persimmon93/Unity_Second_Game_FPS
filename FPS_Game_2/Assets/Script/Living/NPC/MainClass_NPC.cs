@@ -1,3 +1,4 @@
+using FPS_Game;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,17 +13,17 @@ public class MainClass_NPC : MonoBehaviour
     /// 
 
     //Personal Info
-    private string name;
+    private new string name;
     private string description;
     private float movementSpeed;
     private float fieldVision;
     [SerializeField] private LivingClass npcClassification;
     [SerializeField] private bool essentialCharacter;   //If true, prevents death.
 
-    [SerializeField] internal HealthClass healthClassScript;
+    [SerializeField] internal HealthClass npcHealth;
 
     //ScriptableObject data.
-    public NPCScriptableObject scriptableObject;  //Any value from SOLivingObject should only be used in start.
+    public CharacterScriptableObject scriptableObject;  //Any value from SOLivingObject should only be used in start.
 
 
     private bool isDead;
@@ -45,10 +46,10 @@ public class MainClass_NPC : MonoBehaviour
         }
         //gameObject.tag = "NPC";
         //Setting NPC Health
-        healthClassScript = (gameObject.GetComponent<HealthClass>() == null) ? gameObject.AddComponent<HealthClass>(): 
+        npcHealth = (gameObject.GetComponent<HealthClass>() == null) ? gameObject.AddComponent<HealthClass>(): 
             gameObject.GetComponent<HealthClass>();
-        healthClassScript.SetMaxHealth(scriptableObject.health);
-        healthClassScript.ResetHealth();
+        npcHealth.SetMaxHealth(scriptableObject.health);
+        npcHealth.ResetHealth();
 
         //Setting Info
         name = scriptableObject.name;
@@ -80,9 +81,16 @@ public class MainClass_NPC : MonoBehaviour
 
     public void Death()
     {
-        if (!essentialCharacter && healthClassScript.GetHealth() <= 0f)
+        if (!essentialCharacter && npcHealth.GetHealth() <= 0f)
         {
             Destroy(gameObject);
         }
+    }
+
+    //This is an interface method that will call on the changehealth methon in
+    //the healthclass script and change the health.
+    public void Damage()
+    {
+        npcHealth.ChangeHealth(2);
     }
 }

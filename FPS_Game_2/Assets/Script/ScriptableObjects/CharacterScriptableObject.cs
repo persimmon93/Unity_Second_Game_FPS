@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "Living Object", menuName = "Scriptble Object/Living Object", order = 1)]
 
-public class NPCScriptableObject : ScriptableObject
+public class CharacterScriptableObject : ScriptableObject
 {
     public new string name;
     [TextArea(20, 20)]

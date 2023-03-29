@@ -20,8 +20,7 @@ MonoBehaviour:
   range: 209
   fireRate: 4
   maxAmmoCount: 60
-  muzzleFlash: {fileID: 8078759435898811124, guid: 8c0d4865a84268440bc7b288322b9e58, type: 3}
-  itemPickUp: {fileID: 3179173361233258446, guid: 8c0d4865a84268440bc7b288322b9e58, type: 3}
+  gunAudio:
+  - {fileID: 8300000, guid: f19e3fdb9c8082647a2c32beca28ba84, type: 3}
+  - {fileID: 0}
   weapontype: 1
-  shootingAudio: {fileID: 8300000, guid: 8581f806dddef8046b4942de05b897be, type: 3}
-  reloadingAudio: {fileID: 0}

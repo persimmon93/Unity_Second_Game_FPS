@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FPS_Game
 {
-    public class PlayerScriptableObject : MonoBehaviour
+    public class Inventory : MonoBehaviour
     {
         // Start is called before the first frame update
         void Start()

@@ -76,9 +76,9 @@ namespace UserInterface
                 targetInfo.name;
             //Setting Health of target NPC.
             pointer.referenceData[1].GetComponent<Slider>().value =
-                targetInfo.healthClassScript.GetHealth();
+                targetInfo.npcHealth.GetHealth();
             pointer.referenceData[1].GetComponent<Slider>().maxValue =
-                targetInfo.healthClassScript.GetMaxHealth();
+                targetInfo.npcHealth.GetMaxHealth();
             //Sets the gradient for health slider
             pointer.referenceData[1].transform.Find("Fill Area").GetComponentInChildren<Image>().color =
                 gradient.Evaluate(pointer.referenceData[1].GetComponent<Slider>().normalizedValue);

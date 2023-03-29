@@ -12,7 +12,7 @@ using UnityEngine.UI;
 /// For now this is a generic weapons script. For special weapons, will need to make separate classes for weapons.
 /// </summary>
 
-public class GunClass : BaseItem
+public class GunClass : MonoBehaviour, IPickUpAble
 {
     [SerializeField] public GunScriptableObject gunScriptObject;
 
@@ -64,7 +64,7 @@ public class GunClass : BaseItem
 
     }
 
-    public override void PrimaryUse()
+    public void PrimaryUse()
     {
         if (currentAmmoCount <= 0)
             return;
@@ -154,6 +154,11 @@ public class GunClass : BaseItem
     private void Drop()
     {
 
+    }
+
+    public GameObject PickUp()
+    {
+        return gameObject;
     }
     //public void Shoot()
     //{

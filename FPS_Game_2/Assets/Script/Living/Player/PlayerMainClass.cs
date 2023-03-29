@@ -1,3 +1,4 @@
+using FPS_Game;
 using UnityEngine;
 using UserInterface;
 
@@ -14,7 +15,7 @@ namespace Player
 
 
         [HeaderAttribute("ScriptableObject")]
-        public NPCScriptableObject scriptableObject;    //Will serve as the data storage for player.
+        public CharacterScriptableObject scriptableObject;    //Will serve as the data storage for player.
 
         [HeaderAttribute("Health")]
         internal HealthClass playerHealth;
@@ -132,6 +133,13 @@ namespace Player
         {
             if (!isGrounded)
                 playerVelocity.y += gravityValue * Time.deltaTime;
+        }
+
+        //This is an interface method that will call on the changehealth methon in
+        //the healthclass script and change the health.
+        public void Damage()
+        {
+            playerHealth.ChangeHealth(2);
         }
     }
 }
